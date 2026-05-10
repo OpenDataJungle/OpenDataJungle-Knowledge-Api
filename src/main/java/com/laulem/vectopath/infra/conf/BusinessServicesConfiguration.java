@@ -4,6 +4,7 @@ import com.laulem.vectopath.business.model.SecurityConfig;
 import com.laulem.vectopath.business.repository.ResourceRepository;
 import com.laulem.vectopath.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.business.service.AuthenticationService;
+import com.laulem.vectopath.business.service.RerankerService;
 import com.laulem.vectopath.business.service.ResourceService;
 import com.laulem.vectopath.business.service.RoleValidationService;
 import com.laulem.vectopath.business.service.impl.ResourceServiceImpl;
@@ -17,8 +18,9 @@ public class BusinessServicesConfiguration {
 
     @Bean
     public VectorizedResourceService vectorizedResourceService(VectorStoreRepository vectorStoreRepository,
-                                                               AuthenticationService authenticationService) {
-        return new VectorizedResourceService(vectorStoreRepository, authenticationService);
+                                                               AuthenticationService authenticationService,
+                                                               RerankerService rerankerService) {
+        return new VectorizedResourceService(vectorStoreRepository, authenticationService, rerankerService);
     }
 
     @Bean

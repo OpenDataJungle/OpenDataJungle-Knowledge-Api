@@ -4,6 +4,7 @@ import com.laulem.vectopath.business.exception.ResourceDeletionException;
 import com.laulem.vectopath.business.model.PartialResource;
 import com.laulem.vectopath.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.business.service.AuthenticationService;
+import com.laulem.vectopath.business.service.RerankerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +17,14 @@ public class VectorizedResourceService {
 
     private final VectorStoreRepository vectorRepository;
     private final AuthenticationService authenticationService;
+    private final RerankerService rerankerService;
 
     public VectorizedResourceService(VectorStoreRepository vectorRepository,
-                                     AuthenticationService authenticationService) {
+                                     AuthenticationService authenticationService,
+                                     RerankerService rerankerService) {
         this.vectorRepository = vectorRepository;
         this.authenticationService = authenticationService;
+        this.rerankerService = rerankerService;
     }
 
     public List<PartialResource> searchSimilar(String query, int limit, double minSimilarity, List<UUID> resourceIds) {
@@ -29,7 +33,11 @@ public class VectorizedResourceService {
         String currentUser = authenticationService.getCurrentUser();
         List<String> userAuthorities = authenticationService.getAuthorities();
 
-        return vectorRepository.searchSimilar(query, limit, minSimilarity, currentUser, userAuthorities, resourceIds);
+        int candidatePoolSize = limit * 3;
+        List<PartialResource> candidates = vectorRepository.searchSimilar(query, candidatePoolSize, minSimilarity, currentUser, userAuthorities, resourceIds);
+
+        logger.debug("Re-ranking {} candidates down to {} results", candidates.size(), limit);
+        return rerankerService.rerank(query, candidates, limit);
     }
 
     public void deleteResource(UUID resourceId) {

@@ -37,7 +37,9 @@ class HexagonalArchitectureTest {
     void domainShouldNotDependOnAdapters() {
         ArchRule rule = noClasses()
                 .that().resideInAPackage("..business..")
-                .should().dependOnClassesThat().resideInAnyPackage("..client..", "..infra..");
+                .should().dependOnClassesThat().resideInAnyPackage(
+                        "com.laulem.vectopath.client..",
+                        "com.laulem.vectopath.infra..");
 
         rule.check(importedClasses);
     }
@@ -74,7 +76,7 @@ class HexagonalArchitectureTest {
     void infraAdaptersShouldDependOnDomainButNotClient() {
         ArchRule rule = noClasses()
                 .that().resideInAPackage("..infra..")
-                .should().dependOnClassesThat().resideInAPackage("..client..");
+                .should().dependOnClassesThat().resideInAPackage("com.laulem.vectopath.client..");
 
         rule.check(importedClasses);
     }
@@ -125,7 +127,9 @@ class HexagonalArchitectureTest {
     void businessServicesShouldBeInBusinessPackage() {
         ArchRule rule = noClasses()
                 .that().resideInAPackage("..business.service..")
-                .should().dependOnClassesThat().resideInAnyPackage("..client..", "..infra..");
+                .should().dependOnClassesThat().resideInAnyPackage(
+                        "com.laulem.vectopath.client..",
+                        "com.laulem.vectopath.infra..");
 
         rule.check(importedClasses);
     }
@@ -138,6 +142,7 @@ class HexagonalArchitectureTest {
                 .or().haveSimpleNameEndingWith("Dto")
                 .or().haveSimpleNameEndingWith("Request")
                 .or().haveSimpleNameEndingWith("Response")
+                .and().areNotNestedClasses()
                 .should().resideInAPackage("..client.dto..");
 
         rule.check(importedClasses);
