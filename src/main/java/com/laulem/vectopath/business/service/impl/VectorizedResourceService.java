@@ -14,6 +14,7 @@ import java.util.UUID;
 public class VectorizedResourceService {
 
     private static final Logger logger = LoggerFactory.getLogger(VectorizedResourceService.class);
+    public static final int RERANK_CANDIDATE_MULTIPLIER = 3;
 
     private final VectorStoreRepository vectorRepository;
     private final AuthenticationService authenticationService;
@@ -33,7 +34,7 @@ public class VectorizedResourceService {
         String currentUser = authenticationService.getCurrentUser();
         List<String> userAuthorities = authenticationService.getAuthorities();
 
-        int candidatePoolSize = limit * 3;
+        int candidatePoolSize = limit * RERANK_CANDIDATE_MULTIPLIER;
         List<PartialResource> candidates = vectorRepository.searchSimilar(query, candidatePoolSize, minSimilarity, currentUser, userAuthorities, resourceIds);
 
         logger.debug("Re-ranking {} candidates down to {} results", candidates.size(), limit);
