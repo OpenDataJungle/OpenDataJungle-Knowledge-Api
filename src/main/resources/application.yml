@@ -63,7 +63,7 @@ embedding:
   dimensions: ${EMBEDDING_DIMENSIONS:}
 
 reranker:
-  type: ${RERANKER_TYPE:HUGGINGFACE}
+  type: ${RERANKER_TYPE:}
   base-url: ${RERANKER_BASE_URL:http://localhost:8085}
 
 server:
