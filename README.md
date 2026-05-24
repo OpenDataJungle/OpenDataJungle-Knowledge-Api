@@ -494,3 +494,4 @@ docker run -p 8081:8081 vectopath
 - [ ] Add more integration & unit tests
 - [ ] Parametrize rerank multiplier (if rerank activated: RERANKER_TYPE not empty)
 - [ ] Add limits on enpoints (e.g. max file size, max search limit ...)
+
