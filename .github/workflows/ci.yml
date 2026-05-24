@@ -1,0 +1,52 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request_review:
+    types: [ submitted ]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    # Only on approved PR or on main branch
+    if: github.event_name == 'push' || github.event.review.state == 'approved'
+
+    steps:
+      # ─── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ─── Java 25 ─────────────────────────────────────────────────────────────
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      # ─── Docker (required for Testcontainers) ────────────────────────────────
+      - name: Verify Docker is available
+        run: |
+          docker --version
+          docker info
+
+      - name: Pre-pull Docker image for Testcontainers
+        run: docker pull pgvector/pgvector:pg18
+
+      # ─── Build ───────────────────────────────────────────────────────────────
+      - name: Compile
+        run: ./mvnw clean compile --no-transfer-progress
+
+      # ─── Tests ───────────────────────────────────────────────────────────────
+      - name: Run tests
+        run: ./mvnw test --no-transfer-progress
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
+          TESTCONTAINERS_RYUK_DISABLED: false
+
+      # ─── Package ─────────────────────────────────────────────────────────────
+      - name: Package JAR
+        if: success()
+        run: ./mvnw package -DskipTests --no-transfer-progress
