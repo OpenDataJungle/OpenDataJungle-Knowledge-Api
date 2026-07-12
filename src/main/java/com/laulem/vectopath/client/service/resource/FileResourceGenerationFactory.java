@@ -1,7 +1,6 @@
 package com.laulem.vectopath.client.service.resource;
 
 import com.laulem.vectopath.client.exception.UnsupportedFileExtensionException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,17 +13,18 @@ import java.util.stream.Collectors;
 @Component
 public class FileResourceGenerationFactory {
     private final Map<String, FileResourceGeneration> resourceGenerationFactory;
-    private final FileResourceGeneration defaultGeneration;
 
-    public FileResourceGenerationFactory(List<FileResourceGeneration> generations,
-                                         @Qualifier("defaultFileResourceGeneration") final FileResourceGeneration defaultGeneration) {
+    public FileResourceGenerationFactory(List<FileResourceGeneration> generations) {
         this.resourceGenerationFactory = generations.stream()
                 .collect(Collectors.toMap(FileResourceGeneration::getFileExtension, Function.identity(), (_, replacement) -> replacement));
-        this.defaultGeneration = defaultGeneration;
     }
 
     public FileResourceGeneration getResourceGeneration(MultipartFile file) {
-        return resourceGenerationFactory.getOrDefault(extractExtension(file), this.defaultGeneration);
+        FileResourceGeneration fileResourceGeneration = resourceGenerationFactory.get(extractExtension(file));
+        if (fileResourceGeneration == null) {
+            throw new UnsupportedFileExtensionException(extractExtension(file));
+        }
+        return fileResourceGeneration;
     }
 
     private String extractExtension(MultipartFile file) {

@@ -11,7 +11,7 @@ import java.io.IOException;
 @Component
 public class TestDataLoader {
     public static final int EMBEDDING_DIMENSIONS = 1536;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final JdbcTemplate jdbcTemplate;
 
     public TestDataLoader(JdbcTemplate jdbcTemplate) {
@@ -41,13 +41,13 @@ public class TestDataLoader {
     }
 
     public void cleanDatabase() {
-        jdbcTemplate.execute("DELETE FROM vector_store");
-        jdbcTemplate.execute("DELETE FROM resources");
+        jdbcTemplate.execute("DELETE FROM knowledge.vector_store");
+        jdbcTemplate.execute("DELETE FROM knowledge.resources");
     }
 
     private void insertResource(JsonNode resource) {
         String resourceSql = """
-                INSERT INTO resources (id, name, content, content_type, status, metadata, source_type, source_name, created_by, access_level, created_at, updated_at)
+                INSERT INTO knowledge.resources (id, name, content, content_type, status, metadata, source_type, source_name, created_by, access_level, created_at, updated_at)
                 VALUES (?::uuid, ?, ?, ?, ?, ?::json, ?, ?, ?, ?, NOW(), NOW())
                 """;
 
@@ -66,7 +66,7 @@ public class TestDataLoader {
 
     private void insertVector(JsonNode vector, String embeddingVector) {
         String sql = """
-                INSERT INTO vector_store (id, content, metadata, embedding)
+                INSERT INTO knowledge.vector_store (id, content, metadata, embedding)
                 VALUES (?, ?, ?::jsonb, ?::vector)
                 """;
 

@@ -7,10 +7,10 @@ import com.laulem.vectopath.business.repository.ResourceRepository;
 import com.laulem.vectopath.business.service.AuthenticationService;
 import com.laulem.vectopath.infra.entity.ResourceEntity;
 import com.laulem.vectopath.infra.entity.RoleEntity;
+import com.laulem.vectopath.shared.util.DateUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -135,7 +135,7 @@ public class ResourceRepositoryImpl implements ResourceRepository {
         ResourceEntity resource = jpaRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
 
-        resource.setUpdatedAt(LocalDateTime.now());
+        resource.setUpdatedAt(DateUtils.now());
         resource.setName(newName);
         jpaRepository.save(resource);
     }

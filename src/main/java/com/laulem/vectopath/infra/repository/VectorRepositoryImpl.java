@@ -74,9 +74,9 @@ public class VectorRepositoryImpl implements VectorStoreRepository {
             String sql = """
                     WITH authorized_resources AS (
                         SELECT DISTINCT ON (r.id) r.id, r.name, r.content_type, r.metadata, r.created_at, r.updated_at
-                        FROM resources r
-                        LEFT JOIN resource_allowed_roles rar ON r.id = rar.resource_id AND r.access_level = 'ROLE_LIST'
-                        LEFT JOIN app_roles ar ON rar.role_id = ar.id
+                        FROM knowledge.resources r
+                        LEFT JOIN knowledge.resource_allowed_roles rar ON r.id = rar.resource_id AND r.access_level = 'ROLE_LIST'
+                        LEFT JOIN knowledge.app_roles ar ON rar.role_id = ar.id
                         WHERE (r.access_level = 'PUBLIC'
                            OR (r.access_level = 'PRIVATE' AND r.created_by = ?)
                            OR (r.access_level = 'ROLE_LIST' AND ar.role_name = ANY(?)))
@@ -94,7 +94,7 @@ public class VectorRepositoryImpl implements VectorStoreRepository {
                             ar.created_at,
                             ar.updated_at,
                             (1 - (v.embedding <=> ?)) as similarity_score
-                        FROM vector_store v
+                        FROM knowledge.vector_store v
                         INNER JOIN authorized_resources ar ON (v.metadata->>'resource_id')::uuid = ar.id
                         WHERE v.metadata->>'chunk_type' = 'content'
                     ),
@@ -147,7 +147,7 @@ public class VectorRepositoryImpl implements VectorStoreRepository {
     }
 
     public void deleteResource(UUID resourceId) {
-        String deleteSql = "DELETE FROM vector_store WHERE metadata->>'resource_id' = ?";
+        String deleteSql = "DELETE FROM knowledge.vector_store WHERE metadata->>'resource_id' = ?";
         int deletedCount = jdbcTemplate.update(deleteSql, resourceId.toString());
 
         if (deletedCount > 0) {

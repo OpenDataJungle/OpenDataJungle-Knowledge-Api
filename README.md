@@ -55,18 +55,18 @@ Hexagonal architecture (Ports & Adapters) with clear separation of concerns:
 
 ## Technologies Used
 
-| Component       | Technology                                             |
-|-----------------|--------------------------------------------------------|
-| Framework       | Spring Boot **4.0.5**                                  |
-| Language        | Java **25**                                            |
-| Database        | PostgreSQL with pgvector extension                     |
-| AI / Embeddings | Spring AI **2.0.0-M4**, OpenAI, Ollama                 |
-| Re-ranking      | HuggingFace TEI (via REST API)                         |
-| Security        | Spring Security, OAuth2 Resource Server                |
-| Testing         | JUnit 5, Testcontainers **1.21.4**, ArchUnit **1.4.1** |
-| Scraping        | jsoup **1.21.2**                                       |
-| Metrics         | Micrometer + Prometheus                                |
-| Utilities       | Lombok                                                 |
+| Component       | Technology                              |
+|-----------------|-----------------------------------------|
+| Framework       | Spring Boot **4**                       |
+| Language        | Java **25**                             |
+| Database        | PostgreSQL with pgvector extension      |
+| AI / Embeddings | Spring AI **2**, OpenAI, Ollama         |
+| Re-ranking      | HuggingFace TEI (via REST API)          |
+| Security        | Spring Security, OAuth2 Resource Server |
+| Testing         | JUnit 5, Testcontainers, ArchUnit       |
+| Scraping        | jsoup                                   |
+| Metrics         | Micrometer + Prometheus                 |
+| Utilities       | Lombok                                  |
 
 ## Project Structure
 
@@ -494,3 +494,6 @@ docker run -p 8081:8081 vectopath
 - [ ] Add more integration & unit tests
 - [ ] Parametrize rerank multiplier (if rerank activated: RERANKER_TYPE not empty)
 - [ ] Add limits on enpoints (e.g. max file size, max search limit ...)
+
+
+TODO : Lier les pré actions sans passer par un compteur de priorité

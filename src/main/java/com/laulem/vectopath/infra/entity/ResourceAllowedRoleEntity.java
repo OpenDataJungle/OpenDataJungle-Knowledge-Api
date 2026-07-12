@@ -1,5 +1,6 @@
 package com.laulem.vectopath.infra.entity;
 
+import com.laulem.vectopath.shared.util.DateUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,7 +13,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "resource_allowed_roles")
+@Table(name = "resource_allowed_roles", schema = "knowledge")
 @IdClass(ResourceAllowedRoleEntity.ResourceAllowedRoleId.class)
 public class ResourceAllowedRoleEntity {
     @Id
@@ -27,13 +28,13 @@ public class ResourceAllowedRoleEntity {
     private LocalDateTime createdAt;
 
     public ResourceAllowedRoleEntity() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = DateUtils.now();
     }
 
     public ResourceAllowedRoleEntity(UUID resourceId, Integer roleId) {
         this.resourceId = resourceId;
         this.roleId = roleId;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = DateUtils.now();
     }
 
     // Getters and setters

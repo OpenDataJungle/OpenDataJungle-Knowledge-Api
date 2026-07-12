@@ -2,6 +2,7 @@ package com.laulem.vectopath.infra.entity;
 
 import com.laulem.vectopath.business.model.Resource;
 import com.laulem.vectopath.business.model.ResourceStatus;
+import com.laulem.vectopath.shared.util.DateUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,7 +29,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "resources")
+@Table(name = "resources", schema = "knowledge")
 public class ResourceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -70,6 +71,7 @@ public class ResourceEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "resource_allowed_roles",
+            schema = "knowledge",
             joinColumns = @JoinColumn(name = "resource_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
@@ -84,9 +86,9 @@ public class ResourceEntity {
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
+            this.createdAt = DateUtils.now();
         }
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = DateUtils.now();
     }
 
     public static ResourceEntity fromDomain(Resource resource) {

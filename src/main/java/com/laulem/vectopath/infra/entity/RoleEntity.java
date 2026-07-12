@@ -1,5 +1,6 @@
 package com.laulem.vectopath.infra.entity;
 
+import com.laulem.vectopath.shared.util.DateUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "app_roles")
+@Table(name = "app_roles", schema = "knowledge")
 public class RoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,12 +31,12 @@ public class RoleEntity {
     private LocalDateTime createdAt;
 
     public RoleEntity() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = DateUtils.now();
     }
 
     public RoleEntity(String roleName, String description) {
         this.roleName = roleName;
         this.description = description;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = DateUtils.now();
     }
 }

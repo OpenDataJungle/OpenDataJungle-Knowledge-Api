@@ -1,5 +1,7 @@
 package com.laulem.vectopath.business.model;
 
+import com.laulem.vectopath.shared.util.DateUtils;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -27,8 +29,8 @@ public class Resource {
 
     public Resource() {
         this.status = ResourceStatus.PENDING;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = DateUtils.now();
+        this.updatedAt = DateUtils.now();
     }
 
     public Resource(String name, String content, String contentType, String metadata) {
@@ -77,7 +79,7 @@ public class Resource {
 
     public void setStatus(ResourceStatus status) {
         this.status = status;
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = DateUtils.now();
     }
 
     public String getMetadata() {

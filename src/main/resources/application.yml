@@ -15,17 +15,21 @@ spring:
     username: ${DATABASE_USERNAME:user}
     password: ${DATABASE_PASSWORD:password}
     driver-class-name: ${DATABASE_DRIVER:org.postgresql.Driver}
+    hikari:
+      connection-init-sql: ${DATABASE_CONNECTION_INIT_SQL:SET search_path TO knowledge, public}
   jpa:
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:none}
     show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
+        default_schema: ${HIBERNATE_DEFAULT_SCHEMA:knowledge}
         format_sql: ${HIBERNATE_FORMAT_SQL:false}
     open-in-view: ${JPA_OPEN_IN_VIEW:false}
   ai:
     vectorstore:
       pgvector:
+        schema-name: ${PGVECTOR_SCHEMA_NAME:knowledge}
         index-type: ${PGVECTOR_INDEX_TYPE:HNSW}
         distance-type: ${PGVECTOR_DISTANCE_TYPE:COSINE_DISTANCE}
         dimensions: ${PGVECTOR_DIMENSIONS:1536}
