@@ -23,10 +23,6 @@ public class Resource {
     private LocalDateTime updatedAt;
 
 
-    public enum AccessLevel {
-        PUBLIC, PRIVATE, ROLE_LIST
-    }
-
     public Resource() {
         this.status = ResourceStatus.PENDING;
         this.createdAt = DateUtils.now();
@@ -102,16 +98,16 @@ public class Resource {
         return sourceName;
     }
 
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
     public Long getSize() {
         return size;
     }
 
     public void setSize(final Long size) {
         this.size = size;
-    }
-
-    public void setSourceName(String sourceName) {
-        this.sourceName = sourceName;
     }
 
     public String getCreatedBy() {
@@ -152,6 +148,10 @@ public class Resource {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public enum AccessLevel {
+        PUBLIC, PRIVATE, ROLE_LIST
     }
 }
 

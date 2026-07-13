@@ -13,9 +13,8 @@ import java.util.UUID;
 
 public class VectorizedResourceService {
 
-    private static final Logger logger = LoggerFactory.getLogger(VectorizedResourceService.class);
     public static final int RERANK_CANDIDATE_MULTIPLIER = 3;
-
+    private static final Logger logger = LoggerFactory.getLogger(VectorizedResourceService.class);
     private final VectorStoreRepository vectorRepository;
     private final AuthenticationUseCase authenticationUseCase;
     private final RerankerUseCase rerankerUseCase;

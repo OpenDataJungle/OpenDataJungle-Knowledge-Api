@@ -28,11 +28,11 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, UUI
             ORDER BY r.id, r.created_at DESC
             """, nativeQuery = true)
     List<ResourceEntity> findWithAccessControl(
-        @Param("id") String id,
-        @Param("status") String status,
-        @Param("searchName") String searchName,
-        @Param("username") String username,
-        @Param("userRoles") String[] userRoles
+            @Param("id") String id,
+            @Param("status") String status,
+            @Param("searchName") String searchName,
+            @Param("username") String username,
+            @Param("userRoles") String[] userRoles
     );
 
     @Modifying

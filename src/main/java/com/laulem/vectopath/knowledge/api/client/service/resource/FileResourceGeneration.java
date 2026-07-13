@@ -8,5 +8,6 @@ import java.io.IOException;
 
 public interface FileResourceGeneration {
     String getFileExtension();
+
     Resource processResource(Resource resource, CreateResourceRequest request, MultipartFile file) throws IOException;
 }

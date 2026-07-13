@@ -4,5 +4,6 @@ import java.util.List;
 
 public interface SecurityConfig {
     String getAdminRole();
+
     List<String> getNotAffectableRoles();
 }

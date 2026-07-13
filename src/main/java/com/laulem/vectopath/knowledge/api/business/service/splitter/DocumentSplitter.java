@@ -4,5 +4,6 @@ import java.util.List;
 
 public interface DocumentSplitter {
     List<String> split(String content);
+
     String getSplitterKey();
 }

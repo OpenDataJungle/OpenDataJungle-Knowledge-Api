@@ -1,5 +1,6 @@
 package com.laulem.vectopath.knowledge.api.client.config;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.laulem.vectopath.knowledge.api.business.exception.DownloadInterruptedException;
 import com.laulem.vectopath.knowledge.api.business.exception.HttpDownloadException;
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import java.util.Map;
 
@@ -157,13 +157,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ParamException.class)
     public ResponseEntity<GeneralResponseException> handleParamException(ParamException ex, HttpServletRequest request) {
         logger.warn("ParamException: code={}, field={}, path={}, message={}",
-            ex.getCode(), ex.getField(), request.getRequestURI(), ex.getMessage());
+                ex.getCode(), ex.getField(), request.getRequestURI(), ex.getMessage());
         GeneralResponseException response = new GeneralResponseException(
-            ex.getCode(),
-            ex.getMessage(),
-            buildPath(request),
-            ex.getField(),
-            ex.getInformation()
+                ex.getCode(),
+                ex.getMessage(),
+                buildPath(request),
+                ex.getField(),
+                ex.getInformation()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -172,11 +172,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
         logger.warn("NotFoundException: path={}, message={}", request.getRequestURI(), ex.getMessage());
         GeneralResponseException response = new GeneralResponseException(
-            "NOT_FOUND",
-            ex.getMessage(),
-            buildPath(request),
-            null,
-            null
+                "NOT_FOUND",
+                ex.getMessage(),
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
@@ -185,11 +185,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleUnsupportedSourceTypeException(UnsupportedSourceTypeException ex, HttpServletRequest request) {
         logger.warn("UnsupportedSourceTypeException: path={}, message={}", request.getRequestURI(), ex.getMessage());
         GeneralResponseException response = new GeneralResponseException(
-            "UNSUPPORTED_SOURCE_TYPE",
-            ex.getMessage(),
-            buildPath(request),
-            null,
-            null
+                "UNSUPPORTED_SOURCE_TYPE",
+                ex.getMessage(),
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -198,11 +198,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleUnsupportedFileExtensionException(UnsupportedFileExtensionException ex, HttpServletRequest request) {
         logger.warn("UnsupportedFileExtensionException: path={}, message={}", request.getRequestURI(), ex.getMessage());
         GeneralResponseException response = new GeneralResponseException(
-            "UNSUPPORTED_FILE_EXTENSION",
-            ex.getMessage(),
-            buildPath(request),
-            null,
-            null
+                "UNSUPPORTED_FILE_EXTENSION",
+                ex.getMessage(),
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -211,11 +211,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleVectorizationException(VectorizationException ex, HttpServletRequest request) {
         logger.error("VectorizationException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
-            "VECTORIZATION_ERROR",
-            ex.getMessage(),
-            buildPath(request),
-            null,
-            null
+                "VECTORIZATION_ERROR",
+                ex.getMessage(),
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -224,11 +224,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleHttpDownloadException(HttpDownloadException ex, HttpServletRequest request) {
         logger.error("HttpDownloadException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
-            "HTTP_DOWNLOAD_ERROR",
-            ex.getMessage(),
-            buildPath(request),
-            null,
-            null
+                "HTTP_DOWNLOAD_ERROR",
+                ex.getMessage(),
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -237,11 +237,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleDownloadInterruptedException(DownloadInterruptedException ex, HttpServletRequest request) {
         logger.error("DownloadInterruptedException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
-            "DOWNLOAD_INTERRUPTED",
-            ex.getMessage(),
-            buildPath(request),
-            null,
-            null
+                "DOWNLOAD_INTERRUPTED",
+                ex.getMessage(),
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -250,11 +250,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleVectorStoreDeletionException(ResourceDeletionException ex, HttpServletRequest request) {
         logger.error("VectorStoreDeletionException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
-            "VECTOR_STORE_DELETION_ERROR",
-            ex.getMessage(),
-            buildPath(request),
-            null,
-            null
+                "VECTOR_STORE_DELETION_ERROR",
+                ex.getMessage(),
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -263,11 +263,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleGenericException(Exception ex, HttpServletRequest request) {
         logger.error("Unexpected exception: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
-            "INTERNAL_ERROR",
-            "An unexpected error occurred",
-            buildPath(request),
-            null,
-            null
+                "INTERNAL_ERROR",
+                "An unexpected error occurred",
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -276,11 +276,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralResponseException> handleGenericException(NoResourceFoundException ex, HttpServletRequest request) {
         logger.error("Endpoint not found: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
-            "NOT_FOUND",
-            "Endpoint not found",
-            buildPath(request),
-            null,
-            null
+                "NOT_FOUND",
+                "Endpoint not found",
+                buildPath(request),
+                null,
+                null
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }

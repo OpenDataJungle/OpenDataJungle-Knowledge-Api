@@ -83,14 +83,6 @@ public class ResourceEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = DateUtils.now();
-        }
-        this.updatedAt = DateUtils.now();
-    }
-
     public static ResourceEntity fromDomain(Resource resource) {
         ResourceEntity entity = new ResourceEntity();
         if (resource.getId() != null) {
@@ -109,6 +101,14 @@ public class ResourceEntity {
         entity.createdAt = resource.getCreatedAt();
         entity.updatedAt = resource.getUpdatedAt();
         return entity;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = DateUtils.now();
+        }
+        this.updatedAt = DateUtils.now();
     }
 
     public Resource toDomain() {

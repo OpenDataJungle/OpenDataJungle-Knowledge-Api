@@ -80,7 +80,7 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
                         WHERE (r.access_level = 'PUBLIC'
                            OR (r.access_level = 'PRIVATE' AND r.created_by = ?)
                            OR (r.access_level = 'ROLE_LIST' AND ar.role_name = ANY(?)))
-                           """ + resourceIdFilter + """
+                    """ + resourceIdFilter + """
                         ORDER BY r.id
                     ),
                     search_results AS (

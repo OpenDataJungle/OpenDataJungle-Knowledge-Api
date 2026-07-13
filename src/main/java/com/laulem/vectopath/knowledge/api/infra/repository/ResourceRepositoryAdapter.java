@@ -56,11 +56,11 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
         List<String> userRoles = authenticationUseCase.getAuthorities();
 
         List<ResourceEntity> results = jpaRepository.findWithAccessControl(
-            id.toString(),
-            null,
-            null,
-            username,
-            userRoles.toArray(new String[0])
+                id.toString(),
+                null,
+                null,
+                username,
+                userRoles.toArray(new String[0])
         );
 
         return results.isEmpty() ? Optional.empty() : Optional.of(results.getFirst().toDomain());
@@ -73,14 +73,14 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
         List<String> userRoles = authenticationUseCase.getAuthorities();
 
         return jpaRepository.findWithAccessControl(
-            null,
-            null,
-            null,
-            username,
-            userRoles.toArray(new String[0])
-        ).stream()
-        .map(ResourceEntity::toDomain)
-        .toList();
+                        null,
+                        null,
+                        null,
+                        username,
+                        userRoles.toArray(new String[0])
+                ).stream()
+                .map(ResourceEntity::toDomain)
+                .toList();
     }
 
     @Override
@@ -90,14 +90,14 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
         List<String> userRoles = authenticationUseCase.getAuthorities();
 
         return jpaRepository.findWithAccessControl(
-            null,
-            status.name(),
-            null,
-            username,
-            userRoles.toArray(new String[0])
-        ).stream()
-        .map(ResourceEntity::toDomain)
-        .toList();
+                        null,
+                        status.name(),
+                        null,
+                        username,
+                        userRoles.toArray(new String[0])
+                ).stream()
+                .map(ResourceEntity::toDomain)
+                .toList();
     }
 
     @Override
@@ -107,14 +107,14 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
         List<String> userRoles = authenticationUseCase.getAuthorities();
 
         return jpaRepository.findWithAccessControl(
-            null,
-            null,
-            name,
-            username,
-            userRoles.toArray(new String[0])
-        ).stream()
-        .map(ResourceEntity::toDomain)
-        .toList();
+                        null,
+                        null,
+                        name,
+                        username,
+                        userRoles.toArray(new String[0])
+                ).stream()
+                .map(ResourceEntity::toDomain)
+                .toList();
     }
 
     @Override

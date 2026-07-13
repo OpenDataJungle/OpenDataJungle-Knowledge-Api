@@ -132,7 +132,7 @@ public class ResourceController {
     @PreAuthorize(SecurityExpressions.RESOURCES_WRITE)
     @PatchMapping("/{id}")
     public void renameResource(@PathVariable UUID id,
-                                           @RequestBody @Validated RenameResourceRequest request) {
+                               @RequestBody @Validated RenameResourceRequest request) {
         logger.info("Renaming resource {} to: {}", id, request.name());
         resourceUseCase.renameResource(id, request.name());
     }
