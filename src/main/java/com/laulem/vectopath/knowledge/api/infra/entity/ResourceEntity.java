@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -108,6 +109,11 @@ public class ResourceEntity {
         if (this.createdAt == null) {
             this.createdAt = DateUtils.now();
         }
+        this.updatedAt = DateUtils.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
         this.updatedAt = DateUtils.now();
     }
 

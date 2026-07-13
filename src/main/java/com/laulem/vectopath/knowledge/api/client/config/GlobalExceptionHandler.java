@@ -24,6 +24,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Map;
@@ -133,6 +134,19 @@ public class GlobalExceptionHandler {
                 null
         );
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(response);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<GeneralResponseException> handleMissingServletRequestPartException(MissingServletRequestPartException ex, HttpServletRequest request) {
+        logger.warn("MissingServletRequestPartException: path={}, partName={}, message={}", request.getRequestURI(), ex.getRequestPartName(), ex.getMessage());
+        GeneralResponseException response = new GeneralResponseException(
+                "MISSING_REQUEST_PART",
+                "Required part '" + ex.getRequestPartName() + "' is not present",
+                buildPath(request),
+                ex.getRequestPartName(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
