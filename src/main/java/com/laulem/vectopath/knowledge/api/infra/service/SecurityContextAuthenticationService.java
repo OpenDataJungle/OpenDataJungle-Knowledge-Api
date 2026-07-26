@@ -38,5 +38,15 @@ public class SecurityContextAuthenticationService implements AuthenticationUseCa
                         .toList())
                 .orElse(Collections.emptyList());
     }
+
+    @Override
+    public Optional<String> getToken() {
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .filter(Authentication::isAuthenticated)
+                .map(Authentication::getPrincipal)
+                .filter(Jwt.class::isInstance)
+                .map(Jwt.class::cast)
+                .map(Jwt::getTokenValue);
+    }
 }
 

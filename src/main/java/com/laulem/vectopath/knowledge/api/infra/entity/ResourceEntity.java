@@ -12,8 +12,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -23,14 +23,14 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "resources", schema = "knowledge")
+@Table(name = "resource", schema = "knowledge")
 public class ResourceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,7 +50,7 @@ public class ResourceEntity {
     private ResourceStatus status;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private String metadata;
 
     @Column(name = "source_type")
@@ -65,18 +65,15 @@ public class ResourceEntity {
     @Column(name = "created_by")
     private String createdBy;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "access_level", nullable = false)
-    private Resource.AccessLevel accessLevel;
+    @Column(name = "folder_id", columnDefinition = "UUID")
+    private UUID folderId;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "resource_allowed_roles",
-            schema = "knowledge",
-            joinColumns = @JoinColumn(name = "resource_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private List<RoleEntity> allowedRoles = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id", insertable = false, updatable = false)
+    private FolderEntity folder;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "resource")
+    private Set<ResourceGroupPermissionEntity> groupPermissions = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -98,7 +95,7 @@ public class ResourceEntity {
         entity.sourceName = resource.getSourceName();
         entity.size = resource.getSize();
         entity.createdBy = resource.getCreatedBy();
-        entity.accessLevel = resource.getAccessLevel();
+        entity.folderId = resource.getFolderId();
         entity.createdAt = resource.getCreatedAt();
         entity.updatedAt = resource.getUpdatedAt();
         return entity;
@@ -129,12 +126,7 @@ public class ResourceEntity {
         resource.setSourceName(this.sourceName);
         resource.setSize(this.size);
         resource.setCreatedBy(this.createdBy);
-        resource.setAccessLevel(this.accessLevel);
-        resource.setAllowedRoles(
-                this.allowedRoles.stream()
-                        .map(RoleEntity::getRoleName)
-                        .toList()
-        );
+        resource.setFolderId(this.folderId);
         resource.setCreatedAt(this.createdAt);
         resource.setUpdatedAt(this.updatedAt);
         return resource;

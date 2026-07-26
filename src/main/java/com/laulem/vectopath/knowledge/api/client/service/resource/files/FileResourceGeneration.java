@@ -1,4 +1,4 @@
-package com.laulem.vectopath.knowledge.api.client.service.resource;
+package com.laulem.vectopath.knowledge.api.client.service.resource.files;
 
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;

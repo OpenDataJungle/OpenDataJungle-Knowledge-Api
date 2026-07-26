@@ -24,6 +24,8 @@ public interface ResourceRepository {
 
     List<Resource> findByNameContainingIgnoreCase(String name);
 
+    List<Resource> findByCompleteFolderPath(String path);
+
     void deleteById(UUID id);
 
     void updateStatus(Resource resource);

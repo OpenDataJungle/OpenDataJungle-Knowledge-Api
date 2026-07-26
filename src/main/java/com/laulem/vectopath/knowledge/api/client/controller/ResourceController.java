@@ -1,7 +1,6 @@
 package com.laulem.vectopath.knowledge.api.client.controller;
 
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
-import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
@@ -52,7 +51,6 @@ public class ResourceController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResourceResponse createResource(@RequestBody @Validated CreateResourceRequest request) throws IOException {
-        logger.info("Creating new resource of type {} : {}", request.sourceType(), request.name());
         return new ResourceResponse(resourceCreationService.createGeneralResource(request));
     }
 
@@ -63,18 +61,18 @@ public class ResourceController {
             @RequestPart("file") MultipartFile file,
             @RequestParam("name") String name,
             @RequestParam(value = "metadata", required = false) String metadata,
-            @RequestParam(value = "access_level", required = false) Resource.AccessLevel accessLevel,
-            @RequestParam(value = "allowed_roles", required = false) List<String> allowedRoles) throws IOException {
+            @RequestParam(value = "folder_id", required = false) UUID folderId) throws IOException {
+        // TODO : Add group affectation
         logger.info("Creating resource from file: {} with name: {}", file.getOriginalFilename(), name);
-        CreateResourceRequest request = new CreateResourceRequest(name, null, null, "file", metadata, accessLevel, allowedRoles);
+        CreateResourceRequest request = new CreateResourceRequest(name, null, null, "file", metadata, folderId);
         return new ResourceResponse(resourceCreationService.createFileResource(request, file));
     }
 
     @PreAuthorize(SecurityExpressions.RESOURCES_READ)
     @GetMapping
-    public List<ResourceResponse> getAllResources() {
+    public List<ResourceResponse> findAll() {
         logger.info("Retrieving all resources");
-        return resourceUseCase.getAllResources()
+        return resourceUseCase.findAll()
                 .stream()
                 .map(ResourceResponse::new)
                 .toList();
@@ -103,10 +101,10 @@ public class ResourceController {
 
     @PreAuthorize(SecurityExpressions.RESOURCES_READ)
     @GetMapping("/status/{status}")
-    public List<ResourceResponse> getResourcesByStatus(@PathVariable ResourceStatus status) {
+    public List<ResourceResponse> findByStatus(@PathVariable ResourceStatus status) {
         logger.info("Retrieving resources by status: {}", status);
 
-        return resourceUseCase.getResourcesByStatus(status)
+        return resourceUseCase.findByStatus(status)
                 .stream()
                 .map(ResourceResponse::new)
                 .toList();
@@ -142,5 +140,13 @@ public class ResourceController {
     public void deleteResource(@PathVariable UUID id) {
         logger.info("Deleting resource: {}", id);
         resourceUseCase.deleteResource(id);
+    }
+
+    @PreAuthorize(SecurityExpressions.RESOURCES_READ)
+    @GetMapping("/path")
+    public List<ResourceResponse> getResourcesByCompletePath(@RequestParam("complete_path") String completePath) {
+        return resourceUseCase.findByCompleteFolderPath(completePath).stream()
+                .map(ResourceResponse::new)
+                .toList();
     }
 }

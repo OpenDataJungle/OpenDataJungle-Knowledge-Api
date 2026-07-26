@@ -56,7 +56,7 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
         logger.info("[{}] Loaded {} documents", resource.getName(), taggedDocs.size());
     }
 
-    public List<PartialResource> searchSimilar(String query, int limit, double minSimilarity, String currentUser, List<String> userAuthorities, List<UUID> resourceIds) {
+    public List<PartialResource> searchSimilar(String query, int limit, double minSimilarity, String currentUser, List<UUID> resourceIds) {
         try {
             float[] vector = embeddingModel.embed(query);
 
@@ -73,15 +73,26 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
 
             String sql = """
                     WITH authorized_resources AS (
-                        SELECT DISTINCT ON (r.id) r.id, r.name, r.content_type, r.metadata, r.created_at, r.updated_at
-                        FROM knowledge.resources r
-                        LEFT JOIN knowledge.resource_allowed_roles rar ON r.id = rar.resource_id AND r.access_level = 'ROLE_LIST'
-                        LEFT JOIN knowledge.app_roles ar ON rar.role_id = ar.id
-                        WHERE (r.access_level = 'PUBLIC'
-                           OR (r.access_level = 'PRIVATE' AND r.created_by = ?)
-                           OR (r.access_level = 'ROLE_LIST' AND ar.role_name = ANY(?)))
+                        SELECT r.id, r.name, r.content_type, r.metadata, r.created_at, r.updated_at
+                        FROM knowledge.resource r
+                        LEFT JOIN knowledge.folder f ON r.folder_id = f.id
+                        WHERE ( -- Security check: only return resources that the user has access to
+                            r.created_by = ?
+                            OR f.created_by = ?
+                            OR f.id IN (
+                                SELECT fg.folder_id FROM knowledge.folder_group fg
+                                INNER JOIN referential.group_users gu ON fg.group_id = gu.group_id
+                                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = ?
+                                INNER JOIN referential.permissions p ON gu.permission_id = p.id AND p.can_read = true
+                            )
+                            OR r.id IN (
+                                SELECT rgp.resource_id FROM knowledge.resource_group_permission rgp
+                                INNER JOIN referential.group_users gu ON rgp.group_id = gu.group_id
+                                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = ?
+                                INNER JOIN referential.permissions p ON rgp.permission_id = p.id AND p.can_read = true
+                            )
+                        )
                     """ + resourceIdFilter + """
-                        ORDER BY r.id
                     ),
                     search_results AS (
                         SELECT
@@ -116,7 +127,9 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
                         int paramIndex = 1;
                         PreparedStatement ps = conn.prepareStatement(sql);
                         ps.setObject(paramIndex++, currentUser);
-                        ps.setArray(paramIndex++, conn.createArrayOf("text", userAuthorities != null ? userAuthorities.toArray() : new String[0]));
+                        ps.setObject(paramIndex++, currentUser);
+                        ps.setObject(paramIndex++, currentUser);
+                        ps.setObject(paramIndex++, currentUser);
                         if (StringUtils.hasText(resourceIdFilter)) {
                             ps.setArray(paramIndex++, conn.createArrayOf("uuid", resourceIds.toArray()));
                         }

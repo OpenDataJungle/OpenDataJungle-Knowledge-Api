@@ -3,8 +3,8 @@ package com.laulem.vectopath.knowledge.api.client.service;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
-import com.laulem.vectopath.knowledge.api.client.service.resource.FileResourceGenerationFactory;
-import com.laulem.vectopath.knowledge.api.client.service.resource.GeneralResourceGenerationFactory;
+import com.laulem.vectopath.knowledge.api.client.service.resource.files.FileResourceGenerationFactory;
+import com.laulem.vectopath.knowledge.api.client.service.resource.general.GeneralResourceGenerationFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,15 +41,10 @@ public class ResourceCreationService {
     }
 
     private Resource buildBaseResource(CreateResourceRequest request) {
-        String createdBy = authenticationUseCase.getCurrentUser();
-        Resource.AccessLevel accessLevel = request.accessLevel() != null ? request.accessLevel() : Resource.AccessLevel.PRIVATE;
-
         Resource resource = new Resource();
         resource.setName(request.name());
         resource.setMetadata(request.metadata());
-        resource.setCreatedBy(createdBy);
-        resource.setAccessLevel(accessLevel);
-        resource.setAllowedRoles(request.allowedRoles());
+        resource.setCreatedBy(authenticationUseCase.getCurrentUser());
         return resource;
     }
 }

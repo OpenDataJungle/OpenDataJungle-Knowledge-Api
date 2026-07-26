@@ -1,9 +1,8 @@
 package com.laulem.vectopath.knowledge.api.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.laulem.vectopath.knowledge.api.business.model.Resource;
 
-import java.util.List;
+import java.util.UUID;
 
 public record CreateResourceRequest(
         @JsonProperty("name")
@@ -21,10 +20,8 @@ public record CreateResourceRequest(
         @JsonProperty("metadata")
         String metadata,
 
-        @JsonProperty("access_level")
-        Resource.AccessLevel accessLevel,
-
-        @JsonProperty("allowed_roles")
-        List<String> allowedRoles
+        @JsonProperty("folder_id")
+        UUID folderId
 ) {
+
 }

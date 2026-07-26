@@ -4,10 +4,10 @@ import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
 import com.laulem.vectopath.knowledge.api.business.exception.VectorizationException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
+import com.laulem.vectopath.knowledge.api.business.repository.FolderRepository;
 import com.laulem.vectopath.knowledge.api.business.repository.ResourceRepository;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
-import com.laulem.vectopath.knowledge.api.business.service.RoleValidationUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,26 +22,25 @@ public class ResourceService implements ResourceUseCase {
     private final ResourceRepository resourceRepository;
     private final VectorizedResourceService vectorizedResourceService;
     private final VectorStoreRepository vectorRepository;
-    private final RoleValidationUseCase roleValidationUseCase;
+    private final FolderRepository folderRepository;
 
     public ResourceService(ResourceRepository resourceRepository,
                            VectorizedResourceService vectorizedResourceService,
-                           VectorStoreRepository vectorRepository, final RoleValidationUseCase roleValidationUseCase) {
+                           VectorStoreRepository vectorRepository,
+                           FolderRepository folderRepository) {
         this.resourceRepository = resourceRepository;
         this.vectorizedResourceService = vectorizedResourceService;
         this.vectorRepository = vectorRepository;
-        this.roleValidationUseCase = roleValidationUseCase;
+        this.folderRepository = folderRepository;
     }
 
     @Override
     public Resource createResource(Resource resource) {
-        if (resource.getAccessLevel() == null) {
-            resource.setAccessLevel(Resource.AccessLevel.PRIVATE);
+        if (resource.getFolderId() != null && !this.folderRepository.hasCurrentUserWriteAccess(resource.getFolderId())) {
+            throw new NotFoundException("Folder", resource.getFolderId().toString());
         }
-        roleValidationUseCase.validateAllowedRoles(resource.getAllowedRoles());
 
-        resource = processResourceVectorization(resource);
-        return resource;
+        return processResourceVectorization(resource);
     }
 
     @Override
@@ -50,22 +49,32 @@ public class ResourceService implements ResourceUseCase {
     }
 
     @Override
-    public List<Resource> getAllResources() {
+    public List<Resource> findAll() {
+        // Security is handled at the infrastructure layer for performance reasons.
         return resourceRepository.findAll();
     }
 
     @Override
-    public List<Resource> getResourcesByStatus(ResourceStatus status) {
+    public List<Resource> findByStatus(ResourceStatus status) {
+        // Security is handled at the infrastructure layer for performance reasons.
         return resourceRepository.findByStatus(status);
     }
 
     @Override
     public List<Resource> searchResourcesByName(String name) {
+        // Security is handled at the infrastructure layer for performance reasons.
         return resourceRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override
+    public List<Resource> findByCompleteFolderPath(String completePath) {
+        // Security is handled at the infrastructure layer for performance reasons.
+        return resourceRepository.findByCompleteFolderPath(completePath);
+    }
+
+    @Override
     public void deleteResource(UUID id) {
+        // TODO : Add security check to ensure the user has permission to delete the resource
         logger.info("Deleting resource: {}", id);
 
         vectorizedResourceService.deleteResource(id);
@@ -80,13 +89,12 @@ public class ResourceService implements ResourceUseCase {
         logger.info("Reprocessing resource: {}", resource.getName());
 
         vectorizedResourceService.deleteResource(id);
-        resource = processResourceVectorization(resource);
-
-        return resource;
+        return processResourceVectorization(resource);
     }
 
     @Override
     public void renameResource(UUID id, String newName) {
+        // TODO : Add security check to ensure the user has permission to rename the resource
         resourceRepository.updateName(id, newName);
     }
 

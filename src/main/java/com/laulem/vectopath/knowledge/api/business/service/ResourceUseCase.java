@@ -13,11 +13,13 @@ public interface ResourceUseCase {
 
     Optional<Resource> getResourceById(UUID id);
 
-    List<Resource> getAllResources();
+    List<Resource> findAll();
 
-    List<Resource> getResourcesByStatus(ResourceStatus status);
+    List<Resource> findByStatus(ResourceStatus status);
 
     List<Resource> searchResourcesByName(String name);
+
+    List<Resource> findByCompleteFolderPath(String completePath);
 
     void deleteResource(UUID id);
 

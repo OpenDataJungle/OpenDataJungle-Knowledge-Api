@@ -11,4 +11,6 @@ public interface AuthenticationUseCase {
     Optional<String> findCurrentUser();
 
     List<String> getAuthorities();
+
+    Optional<String> getToken();
 }

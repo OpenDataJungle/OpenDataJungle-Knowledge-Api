@@ -3,9 +3,9 @@ package com.laulem.vectopath.knowledge.api.business.model;
 import com.laulem.vectopath.knowledge.api.shared.util.DateUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
+// TODO : Add group permissions
 public class Resource {
     private UUID id;
     private String name;
@@ -17,8 +17,7 @@ public class Resource {
     private String sourceName;
     private Long size;
     private String createdBy;
-    private AccessLevel accessLevel;
-    private List<String> allowedRoles;
+    private UUID folderId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -118,20 +117,12 @@ public class Resource {
         this.createdBy = createdBy;
     }
 
-    public AccessLevel getAccessLevel() {
-        return accessLevel;
+    public UUID getFolderId() {
+        return folderId;
     }
 
-    public void setAccessLevel(AccessLevel accessLevel) {
-        this.accessLevel = accessLevel;
-    }
-
-    public List<String> getAllowedRoles() {
-        return allowedRoles;
-    }
-
-    public void setAllowedRoles(List<String> allowedRoles) {
-        this.allowedRoles = allowedRoles;
+    public void setFolderId(UUID folderId) {
+        this.folderId = folderId;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -148,10 +139,6 @@ public class Resource {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public enum AccessLevel {
-        PUBLIC, PRIVATE, ROLE_LIST
     }
 }
 

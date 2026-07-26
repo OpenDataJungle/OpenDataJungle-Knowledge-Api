@@ -1,4 +1,4 @@
-package com.laulem.vectopath.knowledge.api.client.service.resource;
+package com.laulem.vectopath.knowledge.api.client.service.resource.general;
 
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
@@ -44,6 +44,7 @@ public class UrlResourceGeneration implements GeneralResourceGeneration {
         resource.setContent(content);
         resource.setSize((long) content.getBytes().length);
         resource.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        resource.setFolderId(request.folderId());
         return resourceUseCase.createResource(resource);
     }
 

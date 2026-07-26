@@ -13,26 +13,59 @@ import java.util.UUID;
 public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, UUID> {
 
     @Query(value = """
-            SELECT DISTINCT ON (r.id) r.*
-            FROM knowledge.resources r
-            LEFT JOIN knowledge.resource_allowed_roles rar ON r.id = rar.resource_id AND r.access_level = 'ROLE_LIST'
-            LEFT JOIN knowledge.app_roles ar ON rar.role_id = ar.id
-            WHERE (:id IS NULL OR r.id = CAST(:id AS uuid))
-            AND (:status IS NULL OR r.status = :status)
-            AND (:searchName IS NULL OR LOWER(r.name) LIKE LOWER(:searchName))
-            AND (
-                r.access_level = 'PUBLIC'
-                OR (r.access_level = 'PRIVATE' AND r.created_by = :username)
-                OR (r.access_level = 'ROLE_LIST' AND (ar.role_name = ANY(CAST(:userRoles AS text[])) OR r.created_by = :username))
+        SELECT r.*
+        FROM knowledge.resource r
+        LEFT JOIN knowledge.folder f ON r.folder_id = f.id
+        WHERE (:id IS NULL OR r.id = CAST(:id AS uuid))
+        AND (:status IS NULL OR r.status = :status)
+        AND (:searchName IS NULL OR r.name LIKE :searchName)
+        AND ( -- Security check: only return resources that the user has access to
+            r.created_by = :username
+            OR f.created_by = :username
+            OR f.id IN (
+                SELECT fg.folder_id FROM knowledge.folder_group fg
+                INNER JOIN referential.group_users gu ON fg.group_id = gu.group_id
+                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
+                INNER JOIN referential.permissions p ON gu.permission_id = p.id AND p.can_read = true
             )
-            ORDER BY r.id, r.created_at DESC
-            """, nativeQuery = true)
+            OR r.id IN (
+                SELECT rgp.resource_id FROM knowledge.resource_group_permission rgp
+                INNER JOIN referential.group_users gu ON rgp.group_id = gu.group_id
+                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
+                INNER JOIN referential.permissions p ON rgp.permission_id = p.id AND p.can_read = true
+            )
+        )
+        ORDER BY r.id, r.created_at DESC
+        """, nativeQuery = true)
     List<ResourceEntity> findWithAccessControl(
             @Param("id") String id,
             @Param("status") String status,
             @Param("searchName") String searchName,
-            @Param("username") String username,
-            @Param("userRoles") String[] userRoles
+            @Param("username") String username
+    );
+
+    @Query(value = """
+            SELECT r.*
+            FROM knowledge.resource r
+            INNER JOIN knowledge.folder f ON r.folder_id = f.id AND f.complete_path = :completePath
+            WHERE f.created_by = :username -- Security check: only return resources that the user has access to
+               OR f.id IN (
+                    SELECT fg.folder_id FROM knowledge.folder_group fg
+                    INNER JOIN referential.group_users gu ON fg.group_id = gu.group_id
+                    INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
+                    INNER JOIN referential.permissions p ON gu.permission_id = p.id AND p.can_read = true
+               )
+               OR r.id IN (
+                    SELECT rgp.resource_id FROM knowledge.resource_group_permission rgp
+                    INNER JOIN referential.group_users gu ON rgp.group_id = gu.group_id
+                    INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
+                    INNER JOIN referential.permissions p ON rgp.permission_id = p.id AND p.can_read = true
+               )
+            ORDER BY r.created_at DESC
+            """, nativeQuery = true)
+    List<ResourceEntity> findByCompleteFolderPath(
+            @Param("completePath") String completePath,
+            @Param("username") String username
     );
 
     @Modifying

@@ -31,10 +31,9 @@ public class VectorizedResourceService {
         logger.info("Semantic search for: {}", query);
 
         String currentUser = authenticationUseCase.getCurrentUser();
-        List<String> userAuthorities = authenticationUseCase.getAuthorities();
 
         int candidatePoolSize = limit * RERANK_CANDIDATE_MULTIPLIER;
-        List<PartialResource> candidates = vectorRepository.searchSimilar(query, candidatePoolSize, minSimilarity, currentUser, userAuthorities, resourceIds);
+        List<PartialResource> candidates = vectorRepository.searchSimilar(query, candidatePoolSize, minSimilarity, currentUser, resourceIds);
 
         logger.debug("Re-ranking {} candidates down to {} results", candidates.size(), limit);
         return rerankerUseCase.rerank(query, candidates, limit);
