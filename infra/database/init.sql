@@ -97,16 +97,20 @@ CREATE INDEX resource_group_permission_permission_idx ON knowledge.resource_grou
 -- ====================================================================
 CREATE TABLE IF NOT EXISTS knowledge.vector_store
 (
-    id        text PRIMARY KEY,
-    content   text NOT NULL,
-    metadata  jsonb,
-    embedding vector(1536)
+    id          text PRIMARY KEY,
+    content     text NOT NULL,
+    metadata    jsonb,
+    embedding   vector(1536),
+    resource_id UUID GENERATED ALWAYS AS ((metadata ->> 'resource_id')::uuid) STORED
+        REFERENCES knowledge.resource (id) ON DELETE CASCADE
 );
 
 -- HNSW index for optimized vector searches
 CREATE INDEX IF NOT EXISTS vector_store_embedding_idx ON knowledge.vector_store
     USING hnsw (embedding vector_cosine_ops)
     WITH (m = 16, ef_construction = 64);
+
+CREATE INDEX IF NOT EXISTS vector_store_resource_id_idx ON knowledge.vector_store (resource_id);
 
 -- Defaults data
 INSERT INTO knowledge.folder (id, name, path, complete_path, created_by)
