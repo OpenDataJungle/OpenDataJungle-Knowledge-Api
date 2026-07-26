@@ -1,5 +1,6 @@
 package com.laulem.vectopath.knowledge.api.infra.repository;
 
+import com.laulem.vectopath.knowledge.api.business.exception.ResourceDeletionException;
 import com.laulem.vectopath.knowledge.api.business.model.PartialResource;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
@@ -160,14 +161,17 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
     }
 
     public void deleteResource(UUID resourceId) {
-        String deleteSql = "DELETE FROM knowledge.vector_store WHERE metadata->>'resource_id' = ?";
-        int deletedCount = jdbcTemplate.update(deleteSql, resourceId.toString());
+        try {
+            String deleteSql = "DELETE FROM knowledge.vector_store WHERE metadata->>'resource_id' = ?";
+            int deletedCount = jdbcTemplate.update(deleteSql, resourceId.toString());
 
-        if (deletedCount > 0) {
-            logger.info("Deleted {} documents for resource {}", deletedCount, resourceId);
-        } else {
-            logger.warn("No documents found to delete for resource {}", resourceId);
+            if (deletedCount > 0) {
+                logger.info("Deleted {} documents for resource {}", deletedCount, resourceId);
+            } else {
+                logger.warn("No documents found to delete for resource {}", resourceId);
+            }
+        } catch (Exception e) {
+            throw new ResourceDeletionException(resourceId, e);
         }
-
     }
 }

@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,13 @@ public class FolderEntity {
     @Column(name = "created_by")
     private String createdBy;
 
+    @Column(name = "parent_id", columnDefinition = "UUID")
+    private UUID parentId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
+    private FolderEntity parent;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -74,6 +82,7 @@ public class FolderEntity {
                 .name(folder.getName())
                 .path(folder.getPath())
                 .completePath(folder.getCompletePath())
+                .parentId(folder.getParentId())
                 .createdBy(folder.getCreatedBy())
                 .createdAt(folder.getCreatedAt())
                 .updatedAt(folder.getUpdatedAt())
@@ -85,6 +94,7 @@ public class FolderEntity {
         folder.setId(this.id);
         folder.setName(this.name);
         folder.setPath(this.path);
+        folder.setParentId(this.parentId);
         folder.setCreatedBy(this.createdBy);
         folder.setCreatedAt(this.createdAt);
         folder.setUpdatedAt(this.updatedAt);

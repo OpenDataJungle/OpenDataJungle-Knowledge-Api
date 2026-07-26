@@ -51,6 +51,7 @@ public class ResourceController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResourceResponse createResource(@RequestBody @Validated CreateResourceRequest request) throws IOException {
+        // TODO : Add group affectation
         return new ResourceResponse(resourceCreationService.createGeneralResource(request));
     }
 
@@ -90,10 +91,11 @@ public class ResourceController {
 
     @PreAuthorize(SecurityExpressions.RESOURCES_READ)
     @GetMapping("/search")
-    public List<ResourceResponse> searchResourcesByName(@RequestParam String name) {
-        logger.info("Searching resources by name: {}", name);
+    public List<ResourceResponse> searchResources(@RequestParam(required = false) String name,
+                                                   @RequestParam(required = false) String path) {
+        logger.info("Searching resources by name: {} and path: {}", name, path);
 
-        return resourceUseCase.searchResourcesByName(name)
+        return resourceUseCase.searchResources(name, path)
                 .stream()
                 .map(ResourceResponse::new)
                 .toList();
@@ -140,13 +142,5 @@ public class ResourceController {
     public void deleteResource(@PathVariable UUID id) {
         logger.info("Deleting resource: {}", id);
         resourceUseCase.deleteResource(id);
-    }
-
-    @PreAuthorize(SecurityExpressions.RESOURCES_READ)
-    @GetMapping("/path")
-    public List<ResourceResponse> getResourcesByCompletePath(@RequestParam("complete_path") String completePath) {
-        return resourceUseCase.findByCompleteFolderPath(completePath).stream()
-                .map(ResourceResponse::new)
-                .toList();
     }
 }

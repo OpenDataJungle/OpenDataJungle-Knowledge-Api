@@ -26,7 +26,7 @@ public class SecurityContextAuthenticationService implements AuthenticationUseCa
                 .map(Authentication::getPrincipal)
                 .filter(Jwt.class::isInstance)
                 .map(Jwt.class::cast)
-                .map(jwt -> jwt.getClaimAsString("sub"));
+                .map(jwt -> jwt.getClaimAsString("preferred_username")); // TODO : Use sub
     }
 
     @Override

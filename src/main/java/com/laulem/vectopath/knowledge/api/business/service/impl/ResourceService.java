@@ -1,13 +1,15 @@
 package com.laulem.vectopath.knowledge.api.business.service.impl;
 
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
+import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.exception.VectorizationException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
-import com.laulem.vectopath.knowledge.api.business.repository.FolderRepository;
 import com.laulem.vectopath.knowledge.api.business.repository.ResourceRepository;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
+import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,24 +22,23 @@ public class ResourceService implements ResourceUseCase {
     private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
 
     private final ResourceRepository resourceRepository;
-    private final VectorizedResourceService vectorizedResourceService;
     private final VectorStoreRepository vectorRepository;
-    private final FolderRepository folderRepository;
+    private final FolderUseCase folderUseCase;
 
     public ResourceService(ResourceRepository resourceRepository,
-                           VectorizedResourceService vectorizedResourceService,
                            VectorStoreRepository vectorRepository,
-                           FolderRepository folderRepository) {
+                           final FolderUseCase folderUseCase) {
         this.resourceRepository = resourceRepository;
-        this.vectorizedResourceService = vectorizedResourceService;
         this.vectorRepository = vectorRepository;
-        this.folderRepository = folderRepository;
+        this.folderUseCase = folderUseCase;
     }
 
     @Override
     public Resource createResource(Resource resource) {
-        if (resource.getFolderId() != null && !this.folderRepository.hasCurrentUserWriteAccess(resource.getFolderId())) {
+        if (resource.getFolderId() != null && !folderUseCase.hasCurrentUserWriteAccess(resource.getFolderId())) {
             throw new NotFoundException("Folder", resource.getFolderId().toString());
+        } else if (resource.getFolderId() == null) {
+            resource.setFolderId(folderUseCase.getOrCreateDefaultFolder().getId());
         }
 
         return processResourceVectorization(resource);
@@ -61,15 +62,13 @@ public class ResourceService implements ResourceUseCase {
     }
 
     @Override
-    public List<Resource> searchResourcesByName(String name) {
-        // Security is handled at the infrastructure layer for performance reasons.
-        return resourceRepository.findByNameContainingIgnoreCase(name);
-    }
+    public List<Resource> searchResources(String name, String path) {
+        if (!StringUtils.hasText(name) && !StringUtils.hasText(path)) {
+            throw new ParamException("REQUIRED", "At least one of 'name' or 'path' must be provided", "");
+        }
 
-    @Override
-    public List<Resource> findByCompleteFolderPath(String completePath) {
         // Security is handled at the infrastructure layer for performance reasons.
-        return resourceRepository.findByCompleteFolderPath(completePath);
+        return resourceRepository.search(name, path);
     }
 
     @Override
@@ -77,7 +76,7 @@ public class ResourceService implements ResourceUseCase {
         // TODO : Add security check to ensure the user has permission to delete the resource
         logger.info("Deleting resource: {}", id);
 
-        vectorizedResourceService.deleteResource(id);
+        vectorRepository.deleteResource(id);
         resourceRepository.deleteById(id);
     }
 
@@ -88,7 +87,7 @@ public class ResourceService implements ResourceUseCase {
 
         logger.info("Reprocessing resource: {}", resource.getName());
 
-        vectorizedResourceService.deleteResource(id);
+        vectorRepository.deleteResource(id);
         return processResourceVectorization(resource);
     }
 

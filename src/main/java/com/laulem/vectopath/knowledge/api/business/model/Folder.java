@@ -10,6 +10,7 @@ public class Folder {
     private UUID id;
     private String name;
     private String path;
+    private UUID parentId;
     private List<UUID> groupIds;
     private String createdBy;
     private LocalDateTime createdAt;
@@ -78,6 +79,14 @@ public class Folder {
 
     public String getCompletePath() {
         return path + "/" + name;
+    }
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
     }
 
     public List<UUID> getGroupIds() {

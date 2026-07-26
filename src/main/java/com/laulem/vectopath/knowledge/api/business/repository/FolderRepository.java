@@ -12,11 +12,17 @@ public interface FolderRepository {
 
     Optional<Folder> findById(UUID id);
 
+    Optional<Folder> findByCompletePath(String completePath);
+
+    Optional<Folder> findByIdWithAccessControl(UUID id);
+
     boolean existsById(UUID id);
 
     boolean existsByCompletePath(String completePath);
 
-    List<Folder> findAll();
+    List<Folder> findAllWithAccessControl();
+
+    List<Folder> findAllChildrenWithAccessControl(UUID folderId);
 
     void deleteById(UUID id);
 

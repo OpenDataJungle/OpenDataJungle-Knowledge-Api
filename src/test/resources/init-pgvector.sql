@@ -26,6 +26,7 @@ DROP INDEX IF EXISTS knowledge.folder_path_idx;
 DROP INDEX IF EXISTS idx_resource_created_by;
 DROP INDEX IF EXISTS idx_resource_folder_id;
 DROP INDEX IF EXISTS idx_folder_created_by;
+DROP INDEX IF EXISTS knowledge.folder_parent_id_idx;
 
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS vector;
@@ -38,10 +39,13 @@ CREATE TABLE knowledge.folder
     name            VARCHAR     NOT NULL,
     path            VARCHAR     NOT NULL,
     complete_path   VARCHAR     NOT NULL UNIQUE,
+    parent_id       UUID        REFERENCES knowledge.folder (id) ON DELETE CASCADE,
     created_by      VARCHAR,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX folder_parent_id_idx ON knowledge.folder (parent_id);
 
 CREATE TABLE knowledge.folder_group
 (
@@ -56,7 +60,7 @@ CREATE INDEX folder_group_group_idx ON knowledge.folder_group (group_id);
 CREATE TABLE knowledge.resource
 (
     id           uuid                  DEFAULT uuid_generate_v4() PRIMARY KEY,
-    folder_id    UUID         REFERENCES knowledge.folder (id) ON DELETE SET NULL,
+    folder_id    UUID         REFERENCES knowledge.folder (id) ON DELETE CASCADE,
     name         varchar(255) NOT NULL,
     content      text         NOT NULL,
     content_type varchar(100),

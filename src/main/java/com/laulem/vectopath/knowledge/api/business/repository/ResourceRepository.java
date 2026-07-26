@@ -22,9 +22,7 @@ public interface ResourceRepository {
 
     List<Resource> findByStatus(ResourceStatus status);
 
-    List<Resource> findByNameContainingIgnoreCase(String name);
-
-    List<Resource> findByCompleteFolderPath(String path);
+    List<Resource> search(String name, String completePath);
 
     void deleteById(UUID id);
 

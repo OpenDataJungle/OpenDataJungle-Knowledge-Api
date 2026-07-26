@@ -13,6 +13,7 @@ public class FolderResponse {
     private String name;
     private String path;
     private String completePath;
+    private UUID parentId;
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

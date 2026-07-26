@@ -51,10 +51,25 @@ public class FolderController {
                 .toList();
     }
 
+    @PostMapping("/me")
+    @PreAuthorize(SecurityExpressions.FOLDERS_READ)
+    public FolderResponse getMyDefaultFolder() {
+        Folder folder = folderUseCase.getOrCreateDefaultFolder();
+        return toResponse(folder);
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize(SecurityExpressions.FOLDERS_READ)
     public FolderResponse getById(@PathVariable UUID id) {
         return toResponse(folderUseCase.getById(id));
+    }
+
+    @GetMapping("/{id}/children")
+    @PreAuthorize(SecurityExpressions.FOLDERS_READ)
+    public List<FolderResponse> findAllChildren(@PathVariable UUID id) {
+        return folderUseCase.findAllChildren(id).stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @PutMapping("/{id}")
@@ -81,6 +96,7 @@ public class FolderController {
                 folder.getName(),
                 folder.getPath(),
                 folder.getCompletePath(),
+                folder.getParentId(),
                 folder.getCreatedBy(),
                 folder.getCreatedAt(),
                 folder.getUpdatedAt()

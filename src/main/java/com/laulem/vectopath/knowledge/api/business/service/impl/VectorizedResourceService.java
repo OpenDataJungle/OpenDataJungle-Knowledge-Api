@@ -1,6 +1,5 @@
 package com.laulem.vectopath.knowledge.api.business.service.impl;
 
-import com.laulem.vectopath.knowledge.api.business.exception.ResourceDeletionException;
 import com.laulem.vectopath.knowledge.api.business.model.PartialResource;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
@@ -37,15 +36,6 @@ public class VectorizedResourceService {
 
         logger.debug("Re-ranking {} candidates down to {} results", candidates.size(), limit);
         return rerankerUseCase.rerank(query, candidates, limit);
-    }
-
-    public void deleteResource(UUID resourceId) {
-        logger.info("Deleting resource: {}", resourceId);
-        try {
-            vectorRepository.deleteResource(resourceId);
-        } catch (Exception e) {
-            throw new ResourceDeletionException(resourceId, e);
-        }
     }
 }
 

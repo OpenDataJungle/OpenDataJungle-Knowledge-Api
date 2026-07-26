@@ -4,6 +4,7 @@ import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.model.Folder;
 import com.laulem.vectopath.knowledge.api.business.repository.FolderRepository;
+import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
 import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
 
@@ -11,10 +12,16 @@ import java.util.List;
 import java.util.UUID;
 
 public class FolderService implements FolderUseCase {
-    private final FolderRepository folderRepository;
+    private static final String ROOT_PATH = "ROOT";
+    private static final String USERS_FOLDER_NAME = "USERS";
+    public static final String FOLDER_DELIMITER = "/";
 
-    public FolderService(FolderRepository folderRepository) {
+    private final FolderRepository folderRepository;
+    private final AuthenticationUseCase authenticationUseCase;
+
+    public FolderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase) {
         this.folderRepository = folderRepository;
+        this.authenticationUseCase = authenticationUseCase;
     }
 
     @Override
@@ -25,14 +32,22 @@ public class FolderService implements FolderUseCase {
     }
 
     @Override
-    public Folder getById(UUID id) {
-        return folderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Folder", id.toString()));
+    public Folder getById(UUID folderId) {
+        return folderRepository.findByIdWithAccessControl(folderId)
+                .orElseThrow(() -> new NotFoundException("Folder", folderId.toString()));
     }
 
     @Override
     public List<Folder> listAll() {
-        return folderRepository.findAll();
+        return folderRepository.findAllWithAccessControl();
+    }
+
+    @Override
+    public List<Folder> findAllChildren(UUID folderId) {
+        if (folderRepository.findByIdWithAccessControl(folderId).isEmpty()) {
+            throw new NotFoundException("Folder", folderId.toString());
+        }
+        return folderRepository.findAllChildrenWithAccessControl(folderId);
     }
 
     @Override
@@ -68,6 +83,8 @@ public class FolderService implements FolderUseCase {
             throw new ParamException("FOLDER_PARENT_ACCESS_DENIED", "Current user does not have write access to the parent folder", "path");
         }
 
+        folder.setParentId(parentFolderId);
+
         String completePath = getCompletePath(folder);
         if (folderRepository.existsByCompletePath(completePath)) {
             throw new ParamException("FOLDER_PATH_EXISTS", "A folder with path '" + completePath + "' already exists", "path");
@@ -89,15 +106,32 @@ public class FolderService implements FolderUseCase {
     }
 
     @Override
-    public void delete(UUID id) {
-        if (!folderRepository.existsById(id)) {
-            throw new NotFoundException("Folder", id.toString());
+    public void delete(UUID folderId) {
+        if (!folderRepository.hasCurrentUserWriteAccess(folderId)) {
+            throw new NotFoundException("Folder", folderId.toString());
         }
-        folderRepository.deleteById(id);
+        folderRepository.deleteById(folderId);
+    }
+
+    @Override
+    public Folder getOrCreateDefaultFolder() {
+        String parentPath = ROOT_PATH + FOLDER_DELIMITER + USERS_FOLDER_NAME;
+        return getOrCreateFolder(parentPath, authenticationUseCase.getCurrentUser());
+    }
+
+    @Override
+    public boolean hasCurrentUserWriteAccess(UUID folderId) {
+        return folderRepository.hasCurrentUserWriteAccess(folderId);
+    }
+
+    private Folder getOrCreateFolder(String parentPath, String username) {
+        String completePath = parentPath + FOLDER_DELIMITER + username;
+        return folderRepository.findByCompletePath(completePath)
+                .orElseGet(() -> folderRepository.save(new Folder(username, parentPath, null, username)));
     }
 
     private String getCompletePath(final Folder folder) {
-        return folder.getPath() + "/" + folder.getName();
+        return folder.getPath() + FOLDER_DELIMITER + folder.getName();
     }
 
     private void setDefaultGroupIfNotSet(final Folder folder) {

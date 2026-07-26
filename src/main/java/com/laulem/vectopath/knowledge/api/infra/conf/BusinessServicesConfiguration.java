@@ -24,16 +24,15 @@ public class BusinessServicesConfiguration {
     }
 
     @Bean
-    public FolderUseCase folderService(FolderRepository folderRepository) {
-        return new FolderService(folderRepository);
+    public FolderUseCase folderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase) {
+        return new FolderService(folderRepository, authenticationUseCase);
     }
 
     @Bean
     public ResourceUseCase resourceService(ResourceRepository resourceRepository,
-                                           VectorizedResourceService vectorizedResourceService,
                                            VectorStoreRepository vectorStoreRepository,
-                                           FolderRepository folderRepository) {
-        return new ResourceService(resourceRepository, vectorizedResourceService, vectorStoreRepository, folderRepository);
+                                           FolderUseCase folderUseCase) {
+        return new ResourceService(resourceRepository, vectorStoreRepository, folderUseCase);
     }
 }
 

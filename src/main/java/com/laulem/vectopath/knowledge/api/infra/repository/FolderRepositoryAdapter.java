@@ -55,6 +55,18 @@ public class FolderRepositoryAdapter implements FolderRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<Folder> findByCompletePath(String completePath) {
+        return folderJpaRepository.findByCompletePath(completePath).map(FolderEntity::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Folder> findByIdWithAccessControl(UUID id) {
+        return folderJpaRepository.findByIdWithAccessControl(id, authenticationUseCase.getCurrentUser()).map(FolderEntity::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public boolean existsById(UUID id) {
         return folderJpaRepository.existsById(id);
     }
@@ -67,8 +79,16 @@ public class FolderRepositoryAdapter implements FolderRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Folder> findAll() {
-        return folderJpaRepository.findAll().stream()
+    public List<Folder> findAllWithAccessControl() {
+        return folderJpaRepository.findAllWithAccessControl(authenticationUseCase.getCurrentUser()).stream()
+                .map(FolderEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Folder> findAllChildrenWithAccessControl(UUID folderId) {
+        return folderJpaRepository.findAllChildrenWithAccessControl(folderId, authenticationUseCase.getCurrentUser()).stream()
                 .map(FolderEntity::toDomain)
                 .toList();
     }
@@ -101,7 +121,6 @@ public class FolderRepositoryAdapter implements FolderRepository {
         return referentialRepository.hasGroupWriteAccess(groupIds, authenticationUseCase.getCurrentUser());
     }
 
-    // TODO : Move to GroupRepositoryAdapted
     @Override
     public Optional<UUID> findFolderIdByCompletePath(final String completePath) {
         return folderJpaRepository.findByCompletePath(completePath)
@@ -109,7 +128,6 @@ public class FolderRepositoryAdapter implements FolderRepository {
     }
 
 
-    // TODO : Move to GroupRepositoryAdapted
     @Override
     @Transactional(readOnly = true)
     public List<UUID> getFolderGroupsIdByCompletePath(final String completePath) {

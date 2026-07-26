@@ -44,6 +44,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
                 id.toString(),
                 null,
                 null,
+                null,
                 username
         );
 
@@ -56,6 +57,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
         String username = authenticationUseCase.getCurrentUser();
 
         return jpaRepository.findWithAccessControl(
+                        null,
                         null,
                         null,
                         null,
@@ -74,6 +76,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
                         null,
                         status.name(),
                         null,
+                        null,
                         username
                 ).stream()
                 .map(ResourceEntity::toDomain)
@@ -82,23 +85,16 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Resource> findByNameContainingIgnoreCase(String name) {
+    public List<Resource> search(String name, String path) {
         String username = authenticationUseCase.getCurrentUser();
 
         return jpaRepository.findWithAccessControl(
                         null,
                         null,
                         name,
+                        path,
                         username
                 ).stream()
-                .map(ResourceEntity::toDomain)
-                .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Resource> findByCompleteFolderPath(String path) {
-        return jpaRepository.findByCompleteFolderPath(path, authenticationUseCase.getCurrentUser()).stream()
                 .map(ResourceEntity::toDomain)
                 .toList();
     }

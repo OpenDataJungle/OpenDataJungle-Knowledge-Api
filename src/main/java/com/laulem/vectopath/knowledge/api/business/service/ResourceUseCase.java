@@ -17,9 +17,7 @@ public interface ResourceUseCase {
 
     List<Resource> findByStatus(ResourceStatus status);
 
-    List<Resource> searchResourcesByName(String name);
-
-    List<Resource> findByCompleteFolderPath(String completePath);
+    List<Resource> searchResources(String name, String path);
 
     void deleteResource(UUID id);
 
