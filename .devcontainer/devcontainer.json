@@ -1,4 +1,5 @@
 {
+  "name": "VectoPath-Knowledge-Api",
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
@@ -11,11 +12,8 @@
     "--cap-add=NET_ADMIN",
     "--cap-add=NET_RAW"
   ],
-  "forwardPorts": [8080, 8081],
+  "forwardPorts": [8081],
   "portsAttributes": {
-    "8080": {
-      "label": "app-8080"
-    },
     "8081": {
       "label": "app-8081"
     }
@@ -60,8 +58,8 @@
     "DATABASE_URL": "jdbc:postgresql://host.docker.internal:5432/vecto_path",
     "JWT_ISSUER_URI":"http://host.docker.internal:8090/realms/master"
   },
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
-  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/VectoPath-Knowledge-Api,type=bind,consistency=delegated",
+  "workspaceFolder": "/VectoPath-Knowledge-Api",
   "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
   "waitFor": "postStartCommand"
 }
