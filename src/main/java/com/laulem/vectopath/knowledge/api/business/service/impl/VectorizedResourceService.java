@@ -1,9 +1,11 @@
 package com.laulem.vectopath.knowledge.api.business.service.impl;
 
+import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.model.PartialResource;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.RerankerUseCase;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +29,11 @@ public class VectorizedResourceService {
     }
 
     public List<PartialResource> searchSimilar(String query, int limit, double minSimilarity, List<UUID> resourceIds) {
-        logger.info("Semantic search for: {}", query);
+        if (!StringUtils.hasText(query)) {
+            throw new ParamException("REQUIRED", "Query is required for semantic search", "query");
+        }
+
+        logger.info("Semantic search for: {}", StringUtils.sanitizeForLog(query));
 
         String currentUser = authenticationUseCase.getCurrentUser();
 

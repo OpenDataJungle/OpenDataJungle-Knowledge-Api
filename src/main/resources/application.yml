@@ -5,6 +5,10 @@ application:
 spring:
   application:
     name: VectoPath Knowledge API
+  servlet:
+    multipart:
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:5MB}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:10MB}
   security:
     oauth2:
       resourceserver:
@@ -61,6 +65,9 @@ content:
   download:
     timeout-seconds: ${CONTENT_DOWNLOAD_TIMEOUT:30}
     connect-timeout-seconds: ${CONTENT_DOWNLOAD_CONNECT_TIMEOUT:10}
+    max-size-bytes: ${CONTENT_DOWNLOAD_MAX_SIZE_BYTES:5242880}
+    block-internal-networks: ${CONTENT_DOWNLOAD_BLOCK_INTERNAL_NETWORKS:true}
+    allowed-hosts: ${CONTENT_DOWNLOAD_ALLOWED_HOSTS:}
 
 embedding:
   # provider : OPENAI (default) | OLLAMA

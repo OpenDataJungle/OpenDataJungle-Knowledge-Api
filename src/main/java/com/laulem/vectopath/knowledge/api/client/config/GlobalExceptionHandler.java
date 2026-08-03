@@ -6,6 +6,7 @@ import com.laulem.vectopath.knowledge.api.business.exception.HttpDownloadExcepti
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.exception.ResourceDeletionException;
+import com.laulem.vectopath.knowledge.api.business.exception.SemanticSearchException;
 import com.laulem.vectopath.knowledge.api.business.exception.VectorizationException;
 import com.laulem.vectopath.knowledge.api.client.dto.GeneralResponseException;
 import com.laulem.vectopath.knowledge.api.client.exception.UnsupportedFileExtensionException;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -70,7 +72,7 @@ public class GlobalExceptionHandler {
         logger.warn("IllegalArgumentException: path={}, message={}", request.getRequestURI(), ex.getMessage());
         GeneralResponseException response = new GeneralResponseException(
                 "INVALID_ARGUMENT",
-                ex.getMessage(),
+                "One of the supplied arguments is invalid",
                 buildPath(request),
                 null,
                 null
@@ -115,9 +117,9 @@ public class GlobalExceptionHandler {
         logger.warn("MethodArgumentTypeMismatchException: path={}, message={}", request.getRequestURI(), ex.getMessage());
         GeneralResponseException response = new GeneralResponseException(
                 "INVALID_ARGUMENT",
-                ex.getMessage(),
+                "Invalid value for parameter '" + ex.getName() + "'",
                 buildPath(request),
-                null,
+                ex.getName(),
                 null
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -226,12 +228,38 @@ public class GlobalExceptionHandler {
         logger.error("VectorizationException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
                 "VECTORIZATION_ERROR",
-                ex.getMessage(),
+                "The resource could not be vectorized",
                 buildPath(request),
                 null,
                 null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(SemanticSearchException.class)
+    public ResponseEntity<GeneralResponseException> handleSemanticSearchException(SemanticSearchException ex, HttpServletRequest request) {
+        logger.error("SemanticSearchException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
+        GeneralResponseException response = new GeneralResponseException(
+                "SEMANTIC_SEARCH_ERROR",
+                "The semantic search could not be completed",
+                buildPath(request),
+                null,
+                null
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<GeneralResponseException> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex, HttpServletRequest request) {
+        logger.warn("MaxUploadSizeExceededException: path={}", request.getRequestURI());
+        GeneralResponseException response = new GeneralResponseException(
+                "CONTENT_TOO_LARGE",
+                "The uploaded file exceeds the maximum allowed size",
+                buildPath(request),
+                "file",
+                null
+        );
+        return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE).body(response);
     }
 
     @ExceptionHandler(HttpDownloadException.class)
@@ -239,12 +267,12 @@ public class GlobalExceptionHandler {
         logger.error("HttpDownloadException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
                 "HTTP_DOWNLOAD_ERROR",
-                ex.getMessage(),
+                "The remote content could not be downloaded",
                 buildPath(request),
                 null,
                 null
         );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
     }
 
     @ExceptionHandler(DownloadInterruptedException.class)
@@ -252,7 +280,7 @@ public class GlobalExceptionHandler {
         logger.error("DownloadInterruptedException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
                 "DOWNLOAD_INTERRUPTED",
-                ex.getMessage(),
+                "The remote content download was interrupted",
                 buildPath(request),
                 null,
                 null
@@ -265,7 +293,7 @@ public class GlobalExceptionHandler {
         logger.error("VectorStoreDeletionException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
                 "VECTOR_STORE_DELETION_ERROR",
-                ex.getMessage(),
+                "The resource could not be deleted",
                 buildPath(request),
                 null,
                 null

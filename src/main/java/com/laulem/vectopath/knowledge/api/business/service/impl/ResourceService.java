@@ -7,6 +7,7 @@ import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 import com.laulem.vectopath.knowledge.api.business.repository.ResourceRepository;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
+import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
 import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
@@ -24,13 +25,16 @@ public class ResourceService implements ResourceUseCase {
     private final ResourceRepository resourceRepository;
     private final VectorStoreRepository vectorRepository;
     private final FolderUseCase folderUseCase;
+    private final AuthenticationUseCase authenticationUseCase;
 
     public ResourceService(ResourceRepository resourceRepository,
                            VectorStoreRepository vectorRepository,
-                           final FolderUseCase folderUseCase) {
+                           final FolderUseCase folderUseCase,
+                           final AuthenticationUseCase authenticationUseCase) {
         this.resourceRepository = resourceRepository;
         this.vectorRepository = vectorRepository;
         this.folderUseCase = folderUseCase;
+        this.authenticationUseCase = authenticationUseCase;
     }
 
     @Override
@@ -73,7 +77,8 @@ public class ResourceService implements ResourceUseCase {
 
     @Override
     public void deleteResource(UUID id) {
-        // TODO : Add security check to ensure the user has permission to delete the resource
+        getWritableResource(id);
+
         logger.info("Deleting resource: {}", id);
 
         vectorRepository.deleteResource(id);
@@ -82,10 +87,9 @@ public class ResourceService implements ResourceUseCase {
 
     @Override
     public Resource reprocessResource(UUID id) {
-        Resource resource = resourceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
+        Resource resource = getWritableResource(id);
 
-        logger.info("Reprocessing resource: {}", resource.getName());
+        logger.info("Reprocessing resource: {}", StringUtils.sanitizeForLog(resource.getName()));
 
         vectorRepository.deleteResource(id);
         return processResourceVectorization(resource);
@@ -93,8 +97,27 @@ public class ResourceService implements ResourceUseCase {
 
     @Override
     public void renameResource(UUID id, String newName) {
-        // TODO : Add security check to ensure the user has permission to rename the resource
+        getWritableResource(id);
         resourceRepository.updateName(id, newName);
+    }
+
+    private Resource getWritableResource(UUID id) {
+        Resource resource = resourceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
+
+        if (!hasCurrentUserWriteAccess(resource)) {
+            throw new NotFoundException("Resource", id.toString());
+        }
+        // TODO : Add resource rights
+        return resource;
+    }
+
+    private boolean hasCurrentUserWriteAccess(Resource resource) {
+        if (authenticationUseCase.getCurrentUser().equals(resource.getCreatedBy())) {
+            return true;
+        }
+
+        return resource.getFolderId() != null && folderUseCase.hasCurrentUserWriteAccess(resource.getFolderId());
     }
 
     private Resource processResourceVectorization(Resource resource) {
@@ -107,7 +130,7 @@ public class ResourceService implements ResourceUseCase {
             resource.setStatus(ResourceStatus.VECTORIZED);
             resourceRepository.updateStatus(resource);
 
-            logger.info("Vectorization completed successfully for resource: {}", resource.getName());
+            logger.info("Vectorization completed successfully for resource: {}", StringUtils.sanitizeForLog(resource.getName()));
             return resource;
         } catch (Exception e) {
             resource.setStatus(ResourceStatus.ERROR);

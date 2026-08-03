@@ -31,8 +31,9 @@ public class BusinessServicesConfiguration {
     @Bean
     public ResourceUseCase resourceService(ResourceRepository resourceRepository,
                                            VectorStoreRepository vectorStoreRepository,
-                                           FolderUseCase folderUseCase) {
-        return new ResourceService(resourceRepository, vectorStoreRepository, folderUseCase);
+                                           FolderUseCase folderUseCase,
+                                           AuthenticationUseCase authenticationUseCase) {
+        return new ResourceService(resourceRepository, vectorStoreRepository, folderUseCase, authenticationUseCase);
     }
 }
 

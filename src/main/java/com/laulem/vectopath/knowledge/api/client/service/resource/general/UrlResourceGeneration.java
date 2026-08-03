@@ -5,6 +5,7 @@ import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.service.ContentDownloaderUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class UrlResourceGeneration implements GeneralResourceGeneration {
     @Override
     public Resource processResource(Resource resource, CreateResourceRequest request) throws IOException {
         validateInput(resource, request);
-        logger.info("Creating resource from URL: {}", request.url());
+        logger.info("Creating resource from URL: {}", StringUtils.sanitizeForLog(request.url()));
         String content = contentDownloaderUseCase.downloadContent(request.url().trim());
         resource.setSourceType(getSourceType());
         resource.setSourceName(request.url());

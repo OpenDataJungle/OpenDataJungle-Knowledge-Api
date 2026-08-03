@@ -1,6 +1,7 @@
 package com.laulem.vectopath.knowledge.api.infra.repository;
 
 import com.laulem.vectopath.knowledge.api.business.exception.ResourceDeletionException;
+import com.laulem.vectopath.knowledge.api.business.exception.SemanticSearchException;
 import com.laulem.vectopath.knowledge.api.business.model.PartialResource;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
@@ -156,7 +157,7 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
 
         } catch (Exception e) {
             logger.error("Error during semantic search", e);
-            return List.of();
+            throw new SemanticSearchException(e);
         }
     }
 

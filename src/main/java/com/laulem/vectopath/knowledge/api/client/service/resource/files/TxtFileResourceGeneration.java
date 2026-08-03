@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Service
@@ -33,12 +34,22 @@ public class TxtFileResourceGeneration implements FileResourceGeneration {
         String content = new String(file.getBytes(), StandardCharsets.UTF_8);
         validateInput(resource, content);
         resource.setSourceType("FILE");
-        resource.setSourceName(file.getOriginalFilename());
+        resource.setSourceName(sanitizeFileName(file.getOriginalFilename()));
         resource.setContent(content);
         resource.setSize(file.getSize());
         resource.setContentType(MediaType.TEXT_PLAIN_VALUE);
         resource.setFolderId(request.folderId());
         return resourceUseCase.createResource(resource);
+    }
+
+    /**
+     * Keeps only the file base name so a crafted client cannot inject a path into the stored metadata.
+     */
+    private String sanitizeFileName(String originalFilename) {
+        if (originalFilename == null) {
+            return null;
+        }
+        return Paths.get(originalFilename.replace('\\', '/')).getFileName().toString();
     }
 
     private void validateInput(Resource resource, String content) {

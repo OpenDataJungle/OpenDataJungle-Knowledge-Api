@@ -9,6 +9,7 @@ import com.laulem.vectopath.knowledge.api.client.dto.ResourceContentResponse;
 import com.laulem.vectopath.knowledge.api.client.dto.ResourceResponse;
 import com.laulem.vectopath.knowledge.api.client.service.ResourceCreationService;
 import com.laulem.vectopath.knowledge.api.infra.conf.security.SecurityExpressions;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,8 @@ public class ResourceController {
             @RequestParam(value = "metadata", required = false) String metadata,
             @RequestParam(value = "folder_id", required = false) UUID folderId) throws IOException {
         // TODO : Add group affectation
-        logger.info("Creating resource from file: {} with name: {}", file.getOriginalFilename(), name);
+        logger.info("Creating resource from file: {} with name: {}",
+                StringUtils.sanitizeForLog(file.getOriginalFilename()), StringUtils.sanitizeForLog(name));
         CreateResourceRequest request = new CreateResourceRequest(name, null, null, "file", metadata, folderId);
         return new ResourceResponse(resourceCreationService.createFileResource(request, file));
     }
@@ -93,7 +95,8 @@ public class ResourceController {
     @GetMapping("/search")
     public List<ResourceResponse> searchResources(@RequestParam(required = false) String name,
                                                    @RequestParam(required = false) String path) {
-        logger.info("Searching resources by name: {} and path: {}", name, path);
+        logger.info("Searching resources by name: {} and path: {}",
+                StringUtils.sanitizeForLog(name), StringUtils.sanitizeForLog(path));
 
         return resourceUseCase.searchResources(name, path)
                 .stream()
@@ -133,7 +136,7 @@ public class ResourceController {
     @PatchMapping("/{id}")
     public void renameResource(@PathVariable UUID id,
                                @RequestBody @Validated RenameResourceRequest request) {
-        logger.info("Renaming resource {} to: {}", id, request.name());
+        logger.info("Renaming resource {} to: {}", id, StringUtils.sanitizeForLog(request.name()));
         resourceUseCase.renameResource(id, request.name());
     }
 

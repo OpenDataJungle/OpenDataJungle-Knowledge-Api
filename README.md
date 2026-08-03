@@ -402,7 +402,7 @@ export EMBEDDING_API_KEY=sk-your-api-key-here
 export EMBEDDING_MODEL=text-embedding-3-small
 
 # OAuth2 (Keycloak)
-export JWT_ISSUER_URI=https://auth.myapp.com/realms/production
+export JWT_ISSUER_URI=https://laulem.com/realms/production
 
 # Database
 export DATABASE_URL=jdbc:postgresql://db.myapp.com:5432/vectopath_prod
@@ -410,12 +410,12 @@ export DATABASE_USERNAME=vectopath_user
 export DATABASE_PASSWORD=secure_password
 
 # CORS
-export CORS_ALLOWED_ORIGINS=https://myapp.com,https://www.myapp.com
+export CORS_ALLOWED_ORIGINS=https://localhost,https://www.laulem.com
 export CORS_ALLOW_CREDENTIALS=true
 
 # HuggingFace TEI Reranker (optional)
 export RERANKER_TYPE=HUGGINGFACE
-export RERANKER_BASE_URL=http://reranker.myapp.com:8085
+export RERANKER_BASE_URL=http://reranker.laulem.com:8085
 
 ./mvnw spring-boot:run
 ```

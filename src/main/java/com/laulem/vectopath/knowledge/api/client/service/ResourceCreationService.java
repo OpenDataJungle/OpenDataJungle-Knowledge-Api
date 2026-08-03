@@ -1,5 +1,6 @@
 package com.laulem.vectopath.knowledge.api.client.service;
 
+import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
@@ -36,6 +37,9 @@ public class ResourceCreationService {
 
     public Resource createFileResource(CreateResourceRequest request, MultipartFile file) throws IOException {
         Objects.requireNonNull(file, "MultipartFile must not be null for FILE source type");
+        if (file.isEmpty()) {
+            throw new ParamException("REQUIRED", "Uploaded file must not be empty", "file");
+        }
         Resource resource = buildBaseResource(request);
         return fileFactory.getResourceGeneration(file).processResource(resource, request, file);
     }

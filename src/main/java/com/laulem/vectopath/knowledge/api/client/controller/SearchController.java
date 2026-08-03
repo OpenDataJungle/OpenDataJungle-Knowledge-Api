@@ -30,7 +30,7 @@ public class SearchController {
     @PreAuthorize(SecurityExpressions.SEARCH_SEMANTIC)
     @PostMapping("/semantic")
     public List<SearchResponse> searchSemantic(@RequestBody SearchRequest request) {
-        logger.info("Semantic search: {}", request.query());
+        logger.info("Semantic search requested");
 
         return vectorizedResourceService.searchSimilar(request.query(), request.limit(), request.minSimilarity(), request.resourceIds())
                 .stream()
