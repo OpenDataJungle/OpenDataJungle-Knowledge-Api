@@ -4,12 +4,14 @@ import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.exception.VectorizationException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
+import com.laulem.vectopath.knowledge.api.business.model.ResourceGroupPermission;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 import com.laulem.vectopath.knowledge.api.business.repository.ResourceRepository;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
+import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
 import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,20 @@ public class ResourceService implements ResourceUseCase {
             resource.setFolderId(folderUseCase.getOrCreateDefaultFolder().getId());
         }
 
+        validateGroupPermissions(resource.getGroupPermissions());
+
         return processResourceVectorization(resource);
+    }
+
+    private void validateGroupPermissions(List<ResourceGroupPermission> groupPermissions) {
+        if (CollectionUtils.isEmpty(groupPermissions)) {
+            return;
+        }
+
+        List<UUID> groupIds = groupPermissions.stream().map(ResourceGroupPermission::getGroupId).toList();
+        if (!resourceRepository.hasCurrentUserWriteGroupAccess(groupIds)) {
+            throw new ParamException("RESOURCE_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
+        }
     }
 
     @Override
@@ -108,7 +123,6 @@ public class ResourceService implements ResourceUseCase {
         if (!hasCurrentUserWriteAccess(resource)) {
             throw new NotFoundException("Resource", id.toString());
         }
-        // TODO : Add resource rights
         return resource;
     }
 
@@ -117,7 +131,8 @@ public class ResourceService implements ResourceUseCase {
             return true;
         }
 
-        return resource.getFolderId() != null && folderUseCase.hasCurrentUserWriteAccess(resource.getFolderId());
+        return resource.getFolderId() != null
+                && (folderUseCase.hasCurrentUserWriteAccess(resource.getFolderId()) || resourceRepository.hasCurrentUserWriteAccess(resource.getId()));
     }
 
     private Resource processResourceVectorization(Resource resource) {

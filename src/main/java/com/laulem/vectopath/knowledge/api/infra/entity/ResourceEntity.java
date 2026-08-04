@@ -1,6 +1,7 @@
 package com.laulem.vectopath.knowledge.api.infra.entity;
 
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
+import com.laulem.vectopath.knowledge.api.business.model.ResourceGroupPermission;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 import com.laulem.vectopath.knowledge.api.shared.util.DateUtils;
 import jakarta.persistence.Column;
@@ -23,7 +24,10 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -127,6 +131,9 @@ public class ResourceEntity {
         resource.setSize(this.size);
         resource.setCreatedBy(this.createdBy);
         resource.setFolderId(this.folderId);
+        resource.setGroupPermissions(Optional.ofNullable(this.groupPermissions).orElse(Collections.emptySet()).stream()
+                .map(gp -> new ResourceGroupPermission(gp.getId().getGroupId(), gp.getPermissionId()))
+                .toList());
         resource.setCreatedAt(this.createdAt);
         resource.setUpdatedAt(this.updatedAt);
         return resource;

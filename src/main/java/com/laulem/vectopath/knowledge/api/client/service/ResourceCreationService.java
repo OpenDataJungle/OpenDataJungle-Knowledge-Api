@@ -2,8 +2,10 @@ package com.laulem.vectopath.knowledge.api.client.service;
 
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
+import com.laulem.vectopath.knowledge.api.business.model.ResourceGroupPermission;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
+import com.laulem.vectopath.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.laulem.vectopath.knowledge.api.client.service.resource.files.FileResourceGenerationFactory;
 import com.laulem.vectopath.knowledge.api.client.service.resource.general.GeneralResourceGenerationFactory;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -49,7 +53,17 @@ public class ResourceCreationService {
         resource.setName(request.name());
         resource.setMetadata(request.metadata());
         resource.setCreatedBy(authenticationUseCase.getCurrentUser());
+        resource.setGroupPermissions(toGroupPermissions(request.groupPermissions()));
         return resource;
+    }
+
+    private List<ResourceGroupPermission> toGroupPermissions(List<ResourceGroupPermissionRequest> groupPermissions) {
+        if (groupPermissions == null) {
+            return Collections.emptyList();
+        }
+        return groupPermissions.stream()
+                .map(groupPermission -> new ResourceGroupPermission(groupPermission.groupId(), groupPermission.permissionId()))
+                .toList();
     }
 }
 

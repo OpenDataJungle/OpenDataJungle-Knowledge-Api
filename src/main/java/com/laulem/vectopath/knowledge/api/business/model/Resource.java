@@ -3,9 +3,9 @@ package com.laulem.vectopath.knowledge.api.business.model;
 import com.laulem.vectopath.knowledge.api.shared.util.DateUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-// TODO : Add group permissions
 public class Resource {
     private UUID id;
     private String name;
@@ -18,6 +18,7 @@ public class Resource {
     private Long size;
     private String createdBy;
     private UUID folderId;
+    private List<ResourceGroupPermission> groupPermissions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -123,6 +124,14 @@ public class Resource {
 
     public void setFolderId(UUID folderId) {
         this.folderId = folderId;
+    }
+
+    public List<ResourceGroupPermission> getGroupPermissions() {
+        return groupPermissions;
+    }
+
+    public void setGroupPermissions(List<ResourceGroupPermission> groupPermissions) {
+        this.groupPermissions = groupPermissions;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -49,4 +49,15 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, UUI
     @Modifying
     @Query("UPDATE ResourceEntity r SET r.status = :status WHERE r.id = :id")
     void updateStatus(@Param("id") UUID id, @Param("status") ResourceStatus status);
+
+    @Query(value = """
+        SELECT EXISTS (
+            SELECT 1 FROM knowledge.resource_group_permission rgp
+            INNER JOIN referential.group_users gu ON rgp.group_id = gu.group_id
+            INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
+            INNER JOIN referential.permissions p ON rgp.permission_id = p.id AND p.can_write = true
+            WHERE rgp.resource_id = :resourceId
+        )
+        """, nativeQuery = true)
+    boolean hasGroupWriteAccess(@Param("resourceId") UUID resourceId, @Param("username") String username);
 }

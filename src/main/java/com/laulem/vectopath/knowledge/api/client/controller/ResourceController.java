@@ -6,10 +6,13 @@ import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.RenameResourceRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.ResourceContentResponse;
+import com.laulem.vectopath.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.ResourceResponse;
 import com.laulem.vectopath.knowledge.api.client.service.ResourceCreationService;
 import com.laulem.vectopath.knowledge.api.infra.conf.security.SecurityExpressions;
+import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
 import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +56,6 @@ public class ResourceController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResourceResponse createResource(@RequestBody @Validated CreateResourceRequest request) throws IOException {
-        // TODO : Add group affectation
         return new ResourceResponse(resourceCreationService.createGeneralResource(request));
     }
 
@@ -63,11 +66,11 @@ public class ResourceController {
             @RequestPart("file") MultipartFile file,
             @RequestParam("name") String name,
             @RequestParam(value = "metadata", required = false) String metadata,
-            @RequestParam(value = "folder_id", required = false) UUID folderId) throws IOException {
-        // TODO : Add group affectation
+            @RequestParam(value = "folder_id", required = false) UUID folderId,
+            @Valid @RequestPart(value = "group_permissions", required = false) List<ResourceGroupPermissionRequest> groupPermissions) throws IOException {
         logger.info("Creating resource from file: {} with name: {}",
                 StringUtils.sanitizeForLog(file.getOriginalFilename()), StringUtils.sanitizeForLog(name));
-        CreateResourceRequest request = new CreateResourceRequest(name, null, null, "file", metadata, folderId);
+        CreateResourceRequest request = new CreateResourceRequest(name, null, null, "file", metadata, folderId, CollectionUtils.emptyIfNull(groupPermissions));
         return new ResourceResponse(resourceCreationService.createFileResource(request, file));
     }
 

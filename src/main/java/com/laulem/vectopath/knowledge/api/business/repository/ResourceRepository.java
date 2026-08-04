@@ -29,4 +29,8 @@ public interface ResourceRepository {
     void updateStatus(Resource resource);
 
     void updateName(UUID id, String newName);
+
+    boolean hasCurrentUserWriteAccess(UUID resourceId);
+
+    boolean hasCurrentUserWriteGroupAccess(List<UUID> groupIds);
 }
