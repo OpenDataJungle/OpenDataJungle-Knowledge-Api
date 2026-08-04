@@ -61,6 +61,11 @@ security:
     allow-credentials: ${CORS_ALLOW_CREDENTIALS:false}
     max-age: ${CORS_MAX_AGE:3600}
 
+http:
+  client:
+    connect-timeout-seconds: ${HTTP_CLIENT_CONNECT_TIMEOUT:5}
+    read-timeout-seconds: ${HTTP_CLIENT_READ_TIMEOUT:10}
+
 content:
   download:
     timeout-seconds: ${CONTENT_DOWNLOAD_TIMEOUT:30}
