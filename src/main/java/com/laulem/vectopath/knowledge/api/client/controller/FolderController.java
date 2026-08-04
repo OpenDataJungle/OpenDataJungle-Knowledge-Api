@@ -37,7 +37,7 @@ public class FolderController {
     @PreAuthorize(SecurityExpressions.FOLDERS_WRITE)
     @ResponseStatus(HttpStatus.CREATED)
     public FolderResponse create(@Valid @RequestBody FolderRequest request) {
-        Folder folder = new Folder(request.getName(), request.getPath(), request.getGroupIds(), authenticationUseCase.getCurrentUser());
+        Folder folder = new Folder(request.name(), request.path(), request.groupIds(), authenticationUseCase.getCurrentUser());
         Folder created = folderUseCase.create(folder);
         return toResponse(created);
     }
@@ -76,8 +76,8 @@ public class FolderController {
     @PreAuthorize(SecurityExpressions.FOLDERS_WRITE)
     public FolderResponse update(@PathVariable UUID id, @Valid @RequestBody FolderRequest request) {
         Folder folder = new Folder();
-        folder.setName(request.getName());
-        folder.setPath(request.getPath());
+        folder.setName(request.name());
+        folder.setPath(request.path());
         folder.setId(id);
 
         Folder updated = folderUseCase.update(folder);
