@@ -28,8 +28,6 @@ public interface FolderRepository {
 
     boolean hasCurrentUserWriteAccess(UUID folderId);
 
-    boolean hasCurrentUserWriteGroupAccess(List<UUID> groupIds);
-
     Optional<UUID> findFolderIdByCompletePath(String completePath);
 
     List<UUID> getFolderGroupsIdByCompletePath(String completePath);

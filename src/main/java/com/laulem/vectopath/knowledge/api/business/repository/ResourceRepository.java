@@ -31,6 +31,4 @@ public interface ResourceRepository {
     void updateName(UUID id, String newName);
 
     boolean hasCurrentUserWriteAccess(UUID resourceId);
-
-    boolean hasCurrentUserWriteGroupAccess(List<UUID> groupIds);
 }

@@ -6,6 +6,7 @@ import com.laulem.vectopath.knowledge.api.business.model.Folder;
 import com.laulem.vectopath.knowledge.api.business.repository.FolderRepository;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
+import com.laulem.vectopath.knowledge.api.business.service.ReferentialUseCase;
 import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
 
 import java.util.List;
@@ -18,10 +19,12 @@ public class FolderService implements FolderUseCase {
 
     private final FolderRepository folderRepository;
     private final AuthenticationUseCase authenticationUseCase;
+    private final ReferentialUseCase referentialUseCase;
 
-    public FolderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase) {
+    public FolderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase, ReferentialUseCase referentialUseCase) {
         this.folderRepository = folderRepository;
         this.authenticationUseCase = authenticationUseCase;
+        this.referentialUseCase = referentialUseCase;
     }
 
     @Override
@@ -72,7 +75,7 @@ public class FolderService implements FolderUseCase {
         if (folder.getPath() == null || folder.getName() == null) {
             throw new ParamException("FOLDER_PATH_OR_NAME_NULL", "Folder path and name cannot be null", "path");
         }
-        if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !folderRepository.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
+        if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !referentialUseCase.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
             throw new ParamException("FOLDER_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
         // Check the user can access the parent folder with write access
@@ -100,7 +103,7 @@ public class FolderService implements FolderUseCase {
             throw new ParamException("FOLDER_ACCESS_DENIED", "Current user does not have write access to the folder", "path");
         }
 
-        if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !folderRepository.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
+        if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !referentialUseCase.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
             throw new ParamException("FOLDER_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
     }

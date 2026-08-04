@@ -10,6 +10,7 @@ import com.laulem.vectopath.knowledge.api.business.repository.ResourceRepository
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
+import com.laulem.vectopath.knowledge.api.business.service.ReferentialUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
 import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
 import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
@@ -28,15 +29,18 @@ public class ResourceService implements ResourceUseCase {
     private final VectorStoreRepository vectorRepository;
     private final FolderUseCase folderUseCase;
     private final AuthenticationUseCase authenticationUseCase;
+    private final ReferentialUseCase referentialUseCase;
 
     public ResourceService(ResourceRepository resourceRepository,
                            VectorStoreRepository vectorRepository,
                            final FolderUseCase folderUseCase,
-                           final AuthenticationUseCase authenticationUseCase) {
+                           final AuthenticationUseCase authenticationUseCase,
+                           final ReferentialUseCase referentialUseCase) {
         this.resourceRepository = resourceRepository;
         this.vectorRepository = vectorRepository;
         this.folderUseCase = folderUseCase;
         this.authenticationUseCase = authenticationUseCase;
+        this.referentialUseCase = referentialUseCase;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class ResourceService implements ResourceUseCase {
         }
 
         List<UUID> groupIds = groupPermissions.stream().map(ResourceGroupPermission::getGroupId).toList();
-        if (!resourceRepository.hasCurrentUserWriteGroupAccess(groupIds)) {
+        if (!referentialUseCase.hasCurrentUserWriteGroupAccess(groupIds)) {
             throw new ParamException("RESOURCE_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
     }

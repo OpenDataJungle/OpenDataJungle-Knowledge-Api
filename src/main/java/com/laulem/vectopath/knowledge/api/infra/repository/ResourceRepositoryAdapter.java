@@ -23,16 +23,13 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
     private final ResourceJpaRepository jpaRepository;
     private final ResourceGroupPermissionJpaRepository groupPermissionJpaRepository;
     private final AuthenticationUseCase authenticationUseCase;
-    private final ReferentialRepository referentialRepository;
 
     public ResourceRepositoryAdapter(ResourceJpaRepository jpaRepository,
                                      ResourceGroupPermissionJpaRepository groupPermissionJpaRepository,
-                                     AuthenticationUseCase authenticationUseCase,
-                                     ReferentialRepository referentialRepository) {
+                                     AuthenticationUseCase authenticationUseCase) {
         this.jpaRepository = jpaRepository;
         this.groupPermissionJpaRepository = groupPermissionJpaRepository;
         this.authenticationUseCase = authenticationUseCase;
-        this.referentialRepository = referentialRepository;
     }
 
     @Override
@@ -148,11 +145,6 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
         }
 
         return jpaRepository.hasGroupWriteAccess(resourceId, currentUser);
-    }
-
-    @Override
-    public boolean hasCurrentUserWriteGroupAccess(final List<UUID> groupIds) {
-        return referentialRepository.hasGroupWriteAccess(groupIds, authenticationUseCase.getCurrentUser());
     }
 
     private void assignGroupPermissions(final UUID resourceId, final List<ResourceGroupPermission> groupPermissions) {

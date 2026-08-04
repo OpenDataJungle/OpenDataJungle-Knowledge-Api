@@ -117,11 +117,6 @@ public class FolderRepositoryAdapter implements FolderRepository {
     }
 
     @Override
-    public boolean hasCurrentUserWriteGroupAccess(final List<UUID> groupIds) {
-        return referentialRepository.hasGroupWriteAccess(groupIds, authenticationUseCase.getCurrentUser());
-    }
-
-    @Override
     public Optional<UUID> findFolderIdByCompletePath(final String completePath) {
         return folderJpaRepository.findByCompletePath(completePath)
                 .map(FolderEntity::getId);

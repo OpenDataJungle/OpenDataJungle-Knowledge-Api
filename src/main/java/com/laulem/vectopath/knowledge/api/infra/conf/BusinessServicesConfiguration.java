@@ -5,6 +5,7 @@ import com.laulem.vectopath.knowledge.api.business.repository.ResourceRepository
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
+import com.laulem.vectopath.knowledge.api.business.service.ReferentialUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.RerankerUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.impl.FolderService;
@@ -24,16 +25,18 @@ public class BusinessServicesConfiguration {
     }
 
     @Bean
-    public FolderUseCase folderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase) {
-        return new FolderService(folderRepository, authenticationUseCase);
+    public FolderUseCase folderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase,
+                                       ReferentialUseCase referentialUseCase) {
+        return new FolderService(folderRepository, authenticationUseCase, referentialUseCase);
     }
 
     @Bean
     public ResourceUseCase resourceService(ResourceRepository resourceRepository,
                                            VectorStoreRepository vectorStoreRepository,
                                            FolderUseCase folderUseCase,
-                                           AuthenticationUseCase authenticationUseCase) {
-        return new ResourceService(resourceRepository, vectorStoreRepository, folderUseCase, authenticationUseCase);
+                                           AuthenticationUseCase authenticationUseCase,
+                                           ReferentialUseCase referentialUseCase) {
+        return new ResourceService(resourceRepository, vectorStoreRepository, folderUseCase, authenticationUseCase, referentialUseCase);
     }
 }
 
