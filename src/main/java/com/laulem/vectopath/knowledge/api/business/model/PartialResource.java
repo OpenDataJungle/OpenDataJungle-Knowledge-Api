@@ -10,8 +10,6 @@ public class PartialResource {
     private String resourceName;
     private String contentType;
     private String metadata;
-    private String sourceType;
-    private String sourceName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Double similarityScore;
@@ -64,22 +62,6 @@ public class PartialResource {
 
     public void setMetadata(String metadata) {
         this.metadata = metadata;
-    }
-
-    public String getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(String sourceType) {
-        this.sourceType = sourceType;
-    }
-
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public void setSourceName(String sourceName) {
-        this.sourceName = sourceName;
     }
 
     public LocalDateTime getCreatedAt() {

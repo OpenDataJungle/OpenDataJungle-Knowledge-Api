@@ -40,9 +40,6 @@ class ResourceCreationServiceTest {
     @Mock
     private GeneralResourceGeneration generalResourceGeneration;
 
-    @Mock
-    private FileResourceGeneration fileResourceGeneration;
-
     @InjectMocks
     private ResourceCreationService service;
 

@@ -47,7 +47,6 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
         List<Document> taggedDocs = chunks.stream()
                 .map(chunk -> new Document(chunk, Map.of(
                         "resource_id", resource.getId().toString(),
-                        "resource_name", resource.getName(),
                         "content_type", resource.getContentType(),
                         "status", resource.getStatus().name(),
                         "chunk_type", "content"

@@ -137,7 +137,7 @@ public class ContentDownloadService implements ContentDownloaderUseCase {
             throw new ParamException(INVALID_URL_CODE, "URL is malformed", URL_FIELD);
         }
 
-        String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
+        String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
         if (!ALLOWED_SCHEMES.contains(scheme)) {
             throw new ParamException(INVALID_URL_CODE, "Only http and https URLs are supported", URL_FIELD);
         }
