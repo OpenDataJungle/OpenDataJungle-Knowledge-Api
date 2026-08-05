@@ -6,7 +6,6 @@ import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.laulem.vectopath.knowledge.api.client.service.resource.files.FileResourceGeneration;
-import com.laulem.vectopath.knowledge.api.client.service.resource.files.FileResourceGenerationFactory;
 import com.laulem.vectopath.knowledge.api.client.service.resource.general.GeneralResourceGeneration;
 import com.laulem.vectopath.knowledge.api.client.service.resource.general.GeneralResourceGenerationFactory;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -34,9 +33,6 @@ class ResourceCreationServiceTest {
 
     @Mock
     private GeneralResourceGenerationFactory generalFactory;
-
-    @Mock
-    private FileResourceGenerationFactory fileFactory;
 
     @Mock
     private AuthenticationUseCase authenticationUseCase;

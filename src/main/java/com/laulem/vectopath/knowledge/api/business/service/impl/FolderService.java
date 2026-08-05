@@ -8,6 +8,7 @@ import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase
 import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ReferentialUseCase;
 import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -57,14 +58,11 @@ public class FolderService implements FolderUseCase {
     public Folder update(Folder folder) {
         validateFolderUpdate(folder);
         Folder existing = folderRepository.findById(folder.getId()).orElseThrow(() -> new NotFoundException("Folder", folder.getId().toString()));
+        validateFolderNotAlreadyExists(folder, existing);
+        validateNewGroupPermissions(folder, existing);
 
         UUID parentFolderId = resolveParentFolderId(folder.getPath());
         setDefaultGroupIfNotSet(folder);
-
-        String completePath = getCompletePath(folder);
-        if (!existing.getCompletePath().equals(completePath) && folderRepository.existsByCompletePath(completePath)) {
-            throw new ParamException("FOLDER_PATH_EXISTS", "A folder with path '" + completePath + "' already exists", "path");
-        }
 
         existing.setName(folder.getName());
         existing.setPath(folder.getPath());
@@ -74,8 +72,28 @@ public class FolderService implements FolderUseCase {
         return folderRepository.save(existing);
     }
 
+    /**
+     * Only newly added group IDs require write access: keeping or removing groups already on the
+     * folder is always allowed, even without write access to them.
+     */
+    private void validateNewGroupPermissions(final Folder folder, final Folder existing) {
+        List<UUID> newGroupIds = CollectionUtils.emptyIfNull(folder.getGroupIds()).stream()
+                .filter(groupId -> !CollectionUtils.emptyIfNull(existing.getGroupIds()).contains(groupId))
+                .toList();
+
+        if (CollectionUtils.isNotEmpty(newGroupIds) && !referentialUseCase.hasCurrentUserWriteGroupAccess(newGroupIds)) {
+            throw new ParamException("FOLDER_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
+        }
+    }
+
+    private void validateFolderNotAlreadyExists(final Folder folder, final Folder existing) {
+        if (!existing.getCompletePath().equals(folder.getCompletePath()) && folderRepository.existsByCompletePath(folder.getCompletePath())) {
+            throw new ParamException("FOLDER_PATH_EXISTS", "A folder with path '" + folder.getCompletePath() + "' already exists", "path");
+        }
+    }
+
     private void validateFolderCreation(final Folder folder) {
-        if (folder.getPath() == null || folder.getName() == null) {
+        if (StringUtils.isNullOrBlank(folder.getPath()) || StringUtils.isNullOrBlank(folder.getName())) {
             throw new ParamException("FOLDER_PATH_OR_NAME_NULL", "Folder path and name cannot be null", "path");
         }
         if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !referentialUseCase.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
@@ -84,9 +102,8 @@ public class FolderService implements FolderUseCase {
 
         folder.setParentId(resolveParentFolderId(folder.getPath()));
 
-        String completePath = getCompletePath(folder);
-        if (folderRepository.existsByCompletePath(completePath)) {
-            throw new ParamException("FOLDER_PATH_EXISTS", "A folder with path '" + completePath + "' already exists", "path");
+        if (folderRepository.existsByCompletePath(folder.getCompletePath())) {
+            throw new ParamException("FOLDER_PATH_EXISTS", "A folder with path '" + folder.getCompletePath() + "' already exists", "path");
         }
     }
 
@@ -104,16 +121,12 @@ public class FolderService implements FolderUseCase {
     }
 
     private void validateFolderUpdate(final Folder folder) {
-        if (folder.getPath() == null || folder.getName() == null) {
+        if (StringUtils.isNullOrBlank(folder.getPath()) || StringUtils.isNullOrBlank(folder.getName())) {
             throw new ParamException("FOLDER_PATH_OR_NAME_NULL", "Folder path and name cannot be null", "path");
         }
 
         if (!folderRepository.hasCurrentUserWriteAccess(folder.getId())) {
             throw new ParamException("FOLDER_ACCESS_DENIED", "Current user does not have write access to the folder", "path");
-        }
-
-        if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !referentialUseCase.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
-            throw new ParamException("FOLDER_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
     }
 
@@ -140,10 +153,6 @@ public class FolderService implements FolderUseCase {
         String completePath = parentPath + FOLDER_DELIMITER + username;
         return folderRepository.findByCompletePath(completePath)
                 .orElseGet(() -> folderRepository.save(new Folder(username, parentPath, null, username)));
-    }
-
-    private String getCompletePath(final Folder folder) {
-        return folder.getPath() + FOLDER_DELIMITER + folder.getName();
     }
 
     private void setDefaultGroupIfNotSet(final Folder folder) {
