@@ -1,7 +1,7 @@
 package com.laulem.vectopath.knowledge.api.client.config;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.laulem.vectopath.knowledge.api.business.exception.DownloadInterruptedException;
+import com.laulem.vectopath.knowledge.api.business.exception.ContentDownloadException;
 import com.laulem.vectopath.knowledge.api.business.exception.HttpDownloadException;
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
@@ -275,9 +275,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
     }
 
-    @ExceptionHandler(DownloadInterruptedException.class)
-    public ResponseEntity<GeneralResponseException> handleDownloadInterruptedException(DownloadInterruptedException ex, HttpServletRequest request) {
-        logger.error("DownloadInterruptedException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
+    @ExceptionHandler(ContentDownloadException.class)
+    public ResponseEntity<GeneralResponseException> handleContentDownloadException(ContentDownloadException ex, HttpServletRequest request) {
+        logger.error("ContentDownloadException: path={}, message={}", request.getRequestURI(), ex.getMessage(), ex);
         GeneralResponseException response = new GeneralResponseException(
                 "DOWNLOAD_INTERRUPTED",
                 "The remote content download was interrupted",

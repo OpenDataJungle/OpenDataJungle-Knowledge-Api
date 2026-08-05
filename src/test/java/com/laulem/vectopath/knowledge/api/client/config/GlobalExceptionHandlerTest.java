@@ -1,7 +1,7 @@
 package com.laulem.vectopath.knowledge.api.client.config;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.laulem.vectopath.knowledge.api.business.exception.DownloadInterruptedException;
+import com.laulem.vectopath.knowledge.api.business.exception.ContentDownloadException;
 import com.laulem.vectopath.knowledge.api.business.exception.HttpDownloadException;
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
@@ -396,12 +396,12 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handleDownloadInterruptedException_shouldReturnInternalServerError() {
+    void handleContentDownloadException_shouldReturnInternalServerError() {
         // Given
-        DownloadInterruptedException ex = new DownloadInterruptedException("http://example.com", new RuntimeException("boom"));
+        ContentDownloadException ex = new ContentDownloadException("http://example.com", new RuntimeException("boom"));
 
         // When
-        ResponseEntity<GeneralResponseException> response = handler.handleDownloadInterruptedException(ex, request);
+        ResponseEntity<GeneralResponseException> response = handler.handleContentDownloadException(ex, request);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

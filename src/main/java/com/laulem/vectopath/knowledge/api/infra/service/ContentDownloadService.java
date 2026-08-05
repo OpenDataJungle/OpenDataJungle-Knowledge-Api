@@ -1,6 +1,6 @@
 package com.laulem.vectopath.knowledge.api.infra.service;
 
-import com.laulem.vectopath.knowledge.api.business.exception.DownloadInterruptedException;
+import com.laulem.vectopath.knowledge.api.business.exception.ContentDownloadException;
 import com.laulem.vectopath.knowledge.api.business.exception.HttpDownloadException;
 import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.service.ContentDownloaderUseCase;
@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,13 +24,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -39,15 +36,12 @@ public class ContentDownloadService implements ContentDownloaderUseCase {
     private static final String URL_FIELD = "url";
     private static final int READ_BUFFER_SIZE = 8192;
 
-    private final HttpClient httpClient;
+    private final RestClient restClient;
     private final ContentDownloadProperties contentDownloadProperties;
 
-    public ContentDownloadService(ContentDownloadProperties contentDownloadProperties) {
+    public ContentDownloadService(ContentDownloadProperties contentDownloadProperties, RestClient contentDownloadRestClient) {
         this.contentDownloadProperties = contentDownloadProperties;
-        this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(contentDownloadProperties.getConnectTimeoutSeconds()))
-                .followRedirects(HttpClient.Redirect.NEVER)
-                .build();
+        this.restClient = contentDownloadRestClient;
     }
 
     @Override
@@ -56,28 +50,23 @@ public class ContentDownloadService implements ContentDownloaderUseCase {
         logger.info("Downloading content from URL: {}", StringUtils.sanitizeForLog(uri.toString()));
 
         try {
-            HttpRequest request = HttpRequest.newBuilder()
+            return restClient.get()
                     .uri(uri)
-                    .timeout(Duration.ofSeconds(contentDownloadProperties.getTimeoutSeconds()))
-                    .GET()
-                    .build();
+                    .exchange((_, response) -> {
+                        if (response.getStatusCode().value() != HttpStatus.OK.value()) {
+                            throw new HttpDownloadException(response.getStatusCode().value(), url);
+                        }
 
-            HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+                        try (InputStream responseBody = response.getBody()) {
+                            byte[] body = readWithSizeLimit(responseBody, contentDownloadProperties.getMaxSizeBytes());
+                            Charset charset = resolveCharset(response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
 
-            try (InputStream responseBody = response.body()) {
-                if (response.statusCode() != HttpStatus.OK.value()) {
-                    throw new HttpDownloadException(response.statusCode(), url);
-                }
-
-                byte[] body = readWithSizeLimit(responseBody, contentDownloadProperties.getMaxSizeBytes());
-                Charset charset = resolveCharset(response.headers().firstValue(HttpHeaders.CONTENT_TYPE).orElse(null));
-
-                logger.info("Content successfully downloaded from: {}", StringUtils.sanitizeForLog(uri.toString()));
-                return Jsoup.parse(new String(body, charset)).text();
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new DownloadInterruptedException(url, e);
+                            logger.info("Content successfully downloaded from: {}", StringUtils.sanitizeForLog(uri.toString()));
+                            return Jsoup.parse(new String(body, charset)).text();
+                        }
+                    });
+        } catch (ResourceAccessException e) {
+            throw new ContentDownloadException(url, e);
         }
     }
 
