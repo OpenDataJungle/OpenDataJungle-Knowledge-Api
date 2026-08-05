@@ -11,7 +11,7 @@ public interface ResourceUseCase {
 
     Resource createResource(Resource resource);
 
-    Optional<Resource> getResourceById(UUID id);
+    Optional<Resource> findById(UUID id);
 
     List<Resource> findAll();
 

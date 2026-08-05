@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ResourceCreationService {
@@ -40,10 +41,14 @@ public class ResourceCreationService {
     }
 
     public Resource createFileResource(CreateResourceRequest request, MultipartFile file) throws IOException {
-        Objects.requireNonNull(file, "MultipartFile must not be null for FILE source type");
+        if (file == null) {
+            throw new ParamException("REQUIRED", "Uploaded file must not be null", "file");
+        }
+
         if (file.isEmpty()) {
             throw new ParamException("REQUIRED", "Uploaded file must not be empty", "file");
         }
+
         Resource resource = buildBaseResource(request);
         return fileFactory.getResourceGeneration(file).processResource(resource, request, file);
     }
@@ -58,10 +63,8 @@ public class ResourceCreationService {
     }
 
     private List<ResourceGroupPermission> toGroupPermissions(List<ResourceGroupPermissionRequest> groupPermissions) {
-        if (groupPermissions == null) {
-            return Collections.emptyList();
-        }
-        return groupPermissions.stream()
+        return Optional.ofNullable(groupPermissions).orElse(Collections.emptyList()).stream()
+                .filter(Objects::nonNull)
                 .map(groupPermission -> new ResourceGroupPermission(groupPermission.groupId(), groupPermission.permissionId()))
                 .toList();
     }

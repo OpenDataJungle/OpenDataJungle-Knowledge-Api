@@ -46,10 +46,16 @@ public class TxtFileResourceGeneration implements FileResourceGeneration {
      * Keeps only the file base name so a crafted client cannot inject a path into the stored metadata.
      */
     private String sanitizeFileName(String originalFilename) {
-        if (originalFilename == null) {
-            return null;
+        if (Strings.isBlank(originalFilename)) {
+            throw new ParamException("REQUIRED", "File name is required", "file");
         }
-        return Paths.get(originalFilename.replace('\\', '/')).getFileName().toString();
+
+        String sanitizedFileName = Paths.get(originalFilename.replace('\\', '/')).getFileName().toString();
+        if (Strings.isBlank(sanitizedFileName)) {
+            throw new ParamException("REQUIRED", "File name is required", "file");
+        }
+
+        return sanitizedFileName;
     }
 
     private void validateInput(Resource resource, String content) {

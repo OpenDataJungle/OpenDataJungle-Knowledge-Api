@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -89,7 +88,7 @@ public class ResourceController {
     public ResourceResponse getResourceById(@PathVariable UUID id) {
         logger.info("Retrieving resource: {}", id);
 
-        return resourceUseCase.getResourceById(id)
+        return resourceUseCase.findById(id)
                 .map(ResourceResponse::new)
                 .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
     }
@@ -123,7 +122,7 @@ public class ResourceController {
     public ResourceContentResponse getResourceContent(@PathVariable UUID id) {
         logger.info("Retrieving content for resource: {}", id);
 
-        return resourceUseCase.getResourceById(id)
+        return resourceUseCase.findById(id)
                 .map(ResourceContentResponse::new)
                 .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
     }

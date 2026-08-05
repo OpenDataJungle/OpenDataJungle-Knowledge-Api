@@ -68,7 +68,7 @@ public class ResourceService implements ResourceUseCase {
     }
 
     @Override
-    public Optional<Resource> getResourceById(UUID id) {
+    public Optional<Resource> findById(UUID id) {
         return resourceRepository.findById(id);
     }
 
