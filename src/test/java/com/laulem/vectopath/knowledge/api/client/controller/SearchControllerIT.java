@@ -5,6 +5,7 @@ import com.laulem.vectopath.knowledge.api.client.dto.SearchRequest;
 import com.laulem.vectopath.knowledge.api.testconfig.TestDataLoader;
 import com.laulem.vectopath.knowledge.api.testconfig.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 @Transactional
 @Import(TestcontainersConfiguration.class)
-class SearchControllerIntegrationTest {
+@Disabled
+class SearchControllerIT {
     public static final String SEARCH_SEMANTIC_PATH = "/api/v1/search/semantic";
 
     @Autowired

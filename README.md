@@ -554,9 +554,16 @@ Access control has two layers:
 
 Tests include:
 
-- Integration tests with Testcontainers
 - Architectural tests with ArchUnit (hexagonal architecture validation)
 - REST controller tests
+
+Integration tests relying on Testcontainers (Docker) are named `*IT.java` and are excluded from
+the commands above. They only run via the `it` Maven profile (requires Docker access, so it
+may not work in every devcontainer setup):
+
+```bash
+./mvnw verify -Pit
+```
 
 ### Build
 

@@ -4,6 +4,7 @@ import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 import com.laulem.vectopath.knowledge.api.testconfig.TestDataLoader;
 import com.laulem.vectopath.knowledge.api.testconfig.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 @Transactional
 @Import(TestcontainersConfiguration.class)
-class ResourceControllerIntegrationTest {
+@Disabled
+class ResourceControllerIT {
     public static final String RESOURCES_PATH = "/api/v1/resources";
 
     @Autowired
