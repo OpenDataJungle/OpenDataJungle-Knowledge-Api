@@ -16,13 +16,13 @@ public interface ResourceRepository {
 
     Resource save(Resource resource);
 
-    Optional<Resource> findById(UUID id);
+    Optional<Resource> findByIdWithAccessControl(UUID id);
 
-    List<Resource> findAll();
+    List<Resource> findAllWithAccessControl();
 
-    List<Resource> findByStatus(ResourceStatus status);
+    List<Resource> findByStatusWithAccessControl(ResourceStatus status);
 
-    List<Resource> search(String name, String completePath);
+    List<Resource> searchWithAccessControl(String name, String completePath);
 
     void deleteById(UUID id);
 

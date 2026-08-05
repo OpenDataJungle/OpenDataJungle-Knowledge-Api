@@ -37,6 +37,7 @@ public class VectorizedResourceService {
 
         String currentUser = authenticationUseCase.getCurrentUser();
 
+        // TODO: Add rerank candidate multiplier to configuration
         int candidatePoolSize = limit * RERANK_CANDIDATE_MULTIPLIER;
         List<PartialResource> candidates = vectorRepository.searchSimilar(query, candidatePoolSize, minSimilarity, currentUser, resourceIds);
 
