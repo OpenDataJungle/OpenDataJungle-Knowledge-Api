@@ -58,6 +58,7 @@ public class FolderService implements FolderUseCase {
         validateFolderUpdate(folder);
         Folder existing = folderRepository.findById(folder.getId()).orElseThrow(() -> new NotFoundException("Folder", folder.getId().toString()));
 
+        UUID parentFolderId = resolveParentFolderId(folder.getPath());
         setDefaultGroupIfNotSet(folder);
 
         String completePath = getCompletePath(folder);
@@ -67,6 +68,8 @@ public class FolderService implements FolderUseCase {
 
         existing.setName(folder.getName());
         existing.setPath(folder.getPath());
+        existing.setParentId(parentFolderId);
+        existing.setGroupIds(folder.getGroupIds());
 
         return folderRepository.save(existing);
     }
@@ -78,20 +81,26 @@ public class FolderService implements FolderUseCase {
         if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !referentialUseCase.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
             throw new ParamException("FOLDER_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
-        // Check the user can access the parent folder with write access
-        UUID parentFolderId = folderRepository.findFolderIdByCompletePath(folder.getPath())
-                .orElseThrow(() -> new ParamException("FOLDER_PARENT_NOT_FOUND", "Parent folder with path '" + folder.getPath() + "' does not exist", "path"));
 
-        if (!folderRepository.hasCurrentUserWriteAccess(parentFolderId)) {
-            throw new ParamException("FOLDER_PARENT_ACCESS_DENIED", "Current user does not have write access to the parent folder", "path");
-        }
-
-        folder.setParentId(parentFolderId);
+        folder.setParentId(resolveParentFolderId(folder.getPath()));
 
         String completePath = getCompletePath(folder);
         if (folderRepository.existsByCompletePath(completePath)) {
             throw new ParamException("FOLDER_PATH_EXISTS", "A folder with path '" + completePath + "' already exists", "path");
         }
+    }
+
+    /**
+     * Resolves the parent folder for a given path, requiring it to exist and the current user to have write access to it.
+     */
+    private UUID resolveParentFolderId(String path) {
+        UUID parentFolderId = folderRepository.findFolderIdByCompletePath(path)
+                .orElseThrow(() -> new ParamException("FOLDER_PARENT_NOT_FOUND", "Parent folder with path '" + path + "' does not exist", "path"));
+
+        if (!folderRepository.hasCurrentUserWriteAccess(parentFolderId)) {
+            throw new ParamException("FOLDER_PARENT_ACCESS_DENIED", "Current user does not have write access to the parent folder", "path");
+        }
+        return parentFolderId;
     }
 
     private void validateFolderUpdate(final Folder folder) {

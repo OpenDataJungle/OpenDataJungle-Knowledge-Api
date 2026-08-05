@@ -78,6 +78,7 @@ public class FolderController {
         Folder folder = new Folder();
         folder.setName(request.name());
         folder.setPath(request.path());
+        folder.setGroupIds(request.groupIds());
         folder.setId(id);
 
         Folder updated = folderUseCase.update(folder);
@@ -97,6 +98,7 @@ public class FolderController {
                 folder.getPath(),
                 folder.getCompletePath(),
                 folder.getParentId(),
+                folder.getGroupIds(),
                 folder.getCreatedBy(),
                 folder.getCreatedAt(),
                 folder.getUpdatedAt()
