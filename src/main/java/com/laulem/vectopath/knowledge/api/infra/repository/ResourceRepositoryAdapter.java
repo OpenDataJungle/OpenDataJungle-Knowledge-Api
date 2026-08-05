@@ -48,7 +48,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Resource> findById(UUID id) {
+    public Optional<Resource> findByIdWithAccessControl(UUID id) {
         String username = authenticationUseCase.getCurrentUser();
 
         List<ResourceEntity> results = jpaRepository.findWithAccessControl(
@@ -64,7 +64,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Resource> findAll() {
+    public List<Resource> findAllWithAccessControl() {
         String username = authenticationUseCase.getCurrentUser();
 
         return jpaRepository.findWithAccessControl(
@@ -80,7 +80,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Resource> findByStatus(ResourceStatus status) {
+    public List<Resource> findByStatusWithAccessControl(ResourceStatus status) {
         String username = authenticationUseCase.getCurrentUser();
 
         return jpaRepository.findWithAccessControl(
@@ -96,7 +96,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Resource> search(String name, String path) {
+    public List<Resource> searchWithAccessControl(String name, String path) {
         String username = authenticationUseCase.getCurrentUser();
 
         return jpaRepository.findWithAccessControl(

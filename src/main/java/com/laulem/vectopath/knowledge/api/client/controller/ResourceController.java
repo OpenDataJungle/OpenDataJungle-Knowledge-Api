@@ -138,6 +138,7 @@ public class ResourceController {
     @PatchMapping("/{id}")
     public void renameResource(@PathVariable UUID id,
                                @RequestBody @Validated RenameResourceRequest request) {
+        // TODO : Add the possibilities of setting group permissions and folder_id
         logger.info("Renaming resource {} to: {}", id, StringUtils.sanitizeForLog(request.name()));
         resourceUseCase.renameResource(id, request.name());
     }

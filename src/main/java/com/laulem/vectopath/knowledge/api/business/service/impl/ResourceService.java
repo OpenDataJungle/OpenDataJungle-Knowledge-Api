@@ -69,19 +69,19 @@ public class ResourceService implements ResourceUseCase {
 
     @Override
     public Optional<Resource> findById(UUID id) {
-        return resourceRepository.findById(id);
+        return resourceRepository.findByIdWithAccessControl(id);
     }
 
     @Override
     public List<Resource> findAll() {
         // Security is handled at the infrastructure layer for performance reasons.
-        return resourceRepository.findAll();
+        return resourceRepository.findAllWithAccessControl();
     }
 
     @Override
     public List<Resource> findByStatus(ResourceStatus status) {
         // Security is handled at the infrastructure layer for performance reasons.
-        return resourceRepository.findByStatus(status);
+        return resourceRepository.findByStatusWithAccessControl(status);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ResourceService implements ResourceUseCase {
         }
 
         // Security is handled at the infrastructure layer for performance reasons.
-        return resourceRepository.search(name, path);
+        return resourceRepository.searchWithAccessControl(name, path);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ResourceService implements ResourceUseCase {
     }
 
     private Resource getWritableResource(UUID id) {
-        Resource resource = resourceRepository.findById(id)
+        Resource resource = resourceRepository.findByIdWithAccessControl(id)
                 .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
 
         if (!hasCurrentUserWriteAccess(resource)) {
