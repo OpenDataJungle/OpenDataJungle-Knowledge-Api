@@ -454,4 +454,8 @@ class GlobalExceptionHandlerTest {
     private static MethodParameter dummyMethodParameter() throws NoSuchMethodException {
         return new MethodParameter(GlobalExceptionHandlerTest.class.getDeclaredMethod("dummyTarget", String.class), 0);
     }
+
+    private static void dummyTarget(String value) {
+        // used only via reflection to build a MethodParameter for tests
+    }
 }
