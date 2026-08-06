@@ -16,17 +16,19 @@ public interface ResourceRepository {
 
     Resource save(Resource resource);
 
-    Optional<Resource> findById(UUID id);
+    Optional<Resource> findByIdWithAccessControl(UUID id);
 
-    List<Resource> findAll();
+    List<Resource> findAllWithAccessControl();
 
-    List<Resource> findByStatus(ResourceStatus status);
+    List<Resource> findByStatusWithAccessControl(ResourceStatus status);
 
-    List<Resource> findByNameContainingIgnoreCase(String name);
+    List<Resource> searchWithAccessControl(String name, String completePath);
 
     void deleteById(UUID id);
 
     void updateStatus(Resource resource);
 
     void updateName(UUID id, String newName);
+
+    boolean hasCurrentUserWriteAccess(UUID resourceId);
 }

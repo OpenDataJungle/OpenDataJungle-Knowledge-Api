@@ -8,7 +8,6 @@ import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaEmbeddingOptions;
 import org.springframework.ai.openai.OpenAiEmbeddingModel;
 import org.springframework.ai.openai.OpenAiEmbeddingOptions;
-import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,18 +23,18 @@ public class EmbeddingConfiguration {
     @Bean
     @ConditionalOnProperty(name = "embedding.provider", havingValue = "OPENAI", matchIfMissing = true)
     public EmbeddingModel openAiEmbeddingModel() {
-        OpenAiApi openAiApi = OpenAiApi.builder()
-                .apiKey(embeddingProperties.getApiKey())
-                .build();
-
         OpenAiEmbeddingOptions.Builder options = OpenAiEmbeddingOptions.builder()
+                .apiKey(embeddingProperties.getApiKey())
                 .model(embeddingProperties.getModel());
 
         if (embeddingProperties.getDimensions() != null) {
             options.dimensions(embeddingProperties.getDimensions());
         }
 
-        return new OpenAiEmbeddingModel(openAiApi, MetadataMode.EMBED, options.build());
+        return OpenAiEmbeddingModel.builder()
+                .metadataMode(MetadataMode.EMBED)
+                .options(options.build())
+                .build();
     }
 
     @Bean
@@ -54,7 +53,7 @@ public class EmbeddingConfiguration {
 
         return OllamaEmbeddingModel.builder()
                 .ollamaApi(ollamaApi)
-                .defaultOptions(options.build())
+                .options(options.build())
                 .build();
     }
 }

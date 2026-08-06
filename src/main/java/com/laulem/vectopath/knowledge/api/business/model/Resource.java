@@ -17,8 +17,8 @@ public class Resource {
     private String sourceName;
     private Long size;
     private String createdBy;
-    private AccessLevel accessLevel;
-    private List<String> allowedRoles;
+    private UUID folderId;
+    private List<ResourceGroupPermission> groupPermissions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -118,20 +118,20 @@ public class Resource {
         this.createdBy = createdBy;
     }
 
-    public AccessLevel getAccessLevel() {
-        return accessLevel;
+    public UUID getFolderId() {
+        return folderId;
     }
 
-    public void setAccessLevel(AccessLevel accessLevel) {
-        this.accessLevel = accessLevel;
+    public void setFolderId(UUID folderId) {
+        this.folderId = folderId;
     }
 
-    public List<String> getAllowedRoles() {
-        return allowedRoles;
+    public List<ResourceGroupPermission> getGroupPermissions() {
+        return groupPermissions;
     }
 
-    public void setAllowedRoles(List<String> allowedRoles) {
-        this.allowedRoles = allowedRoles;
+    public void setGroupPermissions(List<ResourceGroupPermission> groupPermissions) {
+        this.groupPermissions = groupPermissions;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -148,10 +148,6 @@ public class Resource {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public enum AccessLevel {
-        PUBLIC, PRIVATE, ROLE_LIST
     }
 }
 

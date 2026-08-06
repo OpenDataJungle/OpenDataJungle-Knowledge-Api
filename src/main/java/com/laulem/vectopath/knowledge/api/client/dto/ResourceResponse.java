@@ -6,6 +6,7 @@ import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public record ResourceResponse(
@@ -18,8 +19,8 @@ public record ResourceResponse(
         @JsonProperty("source_name") String sourceName,
         @JsonProperty("size") Long size,
         @JsonProperty("created_by") String createdBy,
-        @JsonProperty("access_level") Resource.AccessLevel accessLevel,
-        @JsonProperty("allowed_roles") List<String> allowedRoles,
+        @JsonProperty("folder_id") UUID folderId,
+        @JsonProperty("group_permissions") List<ResourceGroupPermissionResponse> groupPermissions,
         @JsonProperty("created_at") LocalDateTime createdAt,
         @JsonProperty("updated_at") LocalDateTime updatedAt
 ) {
@@ -34,12 +35,13 @@ public record ResourceResponse(
                 resource.getSourceName(),
                 resource.getSize(),
                 resource.getCreatedBy(),
-                resource.getAccessLevel(),
-                resource.getAllowedRoles(),
+                resource.getFolderId(),
+                Optional.ofNullable(resource.getGroupPermissions())
+                        .map(groupPermissions -> groupPermissions.stream().map(ResourceGroupPermissionResponse::new).toList())
+                        .orElseGet(List::of),
                 resource.getCreatedAt(),
                 resource.getUpdatedAt()
         );
     }
 }
-
 

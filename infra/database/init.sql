@@ -2,90 +2,125 @@
 -- VectoPath Database Initialization Script (Test Environment)
 -- ====================================================================
 
--- Ensure the knowledge schema exists and is used for all following objects
 CREATE SCHEMA IF NOT EXISTS knowledge;
 SET search_path TO knowledge, public;
 
--- Drop existing tables in the knowledge schema in correct order
-DROP TABLE IF EXISTS knowledge.resource_allowed_roles CASCADE;
+DROP TABLE IF EXISTS knowledge.resource_group_permission CASCADE;
 DROP TABLE IF EXISTS knowledge.vector_store CASCADE;
-DROP TABLE IF EXISTS knowledge.resources CASCADE;
-DROP TABLE IF EXISTS knowledge.app_roles CASCADE;
+DROP TABLE IF EXISTS knowledge.resource CASCADE;
+DROP TABLE IF EXISTS knowledge.folder_group CASCADE;
+DROP TABLE IF EXISTS knowledge.folder CASCADE;
 
--- Drop indexes that might exist in the knowledge schema
 DROP INDEX IF EXISTS knowledge.vector_store_embedding_idx;
-DROP INDEX IF EXISTS knowledge.resources_name_idx;
-DROP INDEX IF EXISTS knowledge.resources_status_idx;
-DROP INDEX IF EXISTS knowledge.resources_created_at_idx;
-DROP INDEX IF EXISTS knowledge.resource_allowed_roles_resource_idx;
-DROP INDEX IF EXISTS knowledge.resource_allowed_roles_role_idx;
+DROP INDEX IF EXISTS knowledge.resource_name_idx;
+DROP INDEX IF EXISTS knowledge.resource_status_idx;
+DROP INDEX IF EXISTS knowledge.resource_created_at_idx;
+DROP INDEX IF EXISTS knowledge.resource_folder_idx;
+DROP INDEX IF EXISTS knowledge.resource_group_permission_resource_idx;
+DROP INDEX IF EXISTS knowledge.resource_group_permission_group_idx;
+DROP INDEX IF EXISTS knowledge.resource_group_permission_permission_idx;
+DROP INDEX IF EXISTS knowledge.folder_group_permission_folder_idx;
+DROP INDEX IF EXISTS knowledge.folder_group_permission_group_idx;
+DROP INDEX IF EXISTS knowledge.folder_group_permission_permission_idx;
+DROP INDEX IF EXISTS knowledge.folder_path_idx;
+DROP INDEX IF EXISTS idx_resource_created_by;
+DROP INDEX IF EXISTS idx_resource_folder_id;
+DROP INDEX IF EXISTS idx_folder_created_by;
+DROP INDEX IF EXISTS knowledge.folder_parent_id_idx;
 
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS hstore;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ====================================================================
--- Table app_roles: Store available roles
--- ====================================================================
-CREATE TABLE knowledge.app_roles (
-    id SERIAL PRIMARY KEY,
-    role_name varchar(100) NOT NULL UNIQUE,
-    description varchar(500),
-    created_at TIMESTAMPTZ DEFAULT now()
+CREATE TABLE knowledge.folder
+(
+    id              UUID PRIMARY KEY,
+    name            VARCHAR     NOT NULL,
+    path            VARCHAR     NOT NULL,
+    complete_path   VARCHAR     NOT NULL UNIQUE,
+    parent_id       UUID        REFERENCES knowledge.folder (id) ON DELETE CASCADE,
+    created_by      VARCHAR,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- ====================================================================
--- Table resources: Store resource metadata
--- ====================================================================
-CREATE TABLE knowledge.resources (
-                           id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-                           name varchar(255) NOT NULL,
-                           content text NOT NULL,
-                           content_type varchar(100),
-                           status varchar(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'PROCESSING', 'VECTORIZED', 'ERROR')),
-                           metadata json,
-                           source_type varchar(20),
-                           source_name varchar(500),
-                           size bigint,
-                           created_by varchar(255),
-                           access_level varchar(20) NOT NULL DEFAULT 'PRIVATE' CHECK (access_level IN ('PUBLIC', 'PRIVATE', 'ROLE_LIST')),
-                           created_at TIMESTAMPTZ DEFAULT now(),
-                           updated_at TIMESTAMPTZ DEFAULT now()
+CREATE INDEX folder_parent_id_idx ON knowledge.folder (parent_id);
+
+CREATE TABLE knowledge.folder_group
+(
+    folder_id     UUID NOT NULL REFERENCES knowledge.folder (id) ON DELETE CASCADE,
+    group_id      UUID NOT NULL REFERENCES referential.groups (id) ON DELETE CASCADE,
+    PRIMARY KEY (folder_id, group_id)
 );
 
--- Indexes to optimize queries on resources table
-CREATE INDEX resources_name_idx ON knowledge.resources(name);
-CREATE INDEX resources_status_idx ON knowledge.resources(status);
-CREATE INDEX resources_created_at_idx ON knowledge.resources(created_at DESC);
+CREATE INDEX folder_group_folder_idx ON knowledge.folder_group (folder_id);
+CREATE INDEX folder_group_group_idx ON knowledge.folder_group (group_id);
 
--- ====================================================================
--- Table resource_allowed_roles: Many-to-many relationship between resources and roles
--- ====================================================================
-CREATE TABLE knowledge.resource_allowed_roles (
-    resource_id uuid NOT NULL REFERENCES knowledge.resources(id) ON DELETE CASCADE,
-    role_id integer NOT NULL REFERENCES knowledge.app_roles(id) ON DELETE CASCADE,
-    created_at TIMESTAMPTZ DEFAULT now(),
-    PRIMARY KEY (resource_id, role_id)
+CREATE TABLE knowledge.resource
+(
+    id           uuid                  DEFAULT uuid_generate_v4() PRIMARY KEY,
+    folder_id    UUID         REFERENCES knowledge.folder (id) ON DELETE CASCADE,
+    name         varchar(255) NOT NULL,
+    content      text         NOT NULL,
+    content_type varchar(100),
+    status       varchar(20)  NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'PROCESSING', 'VECTORIZED', 'ERROR')),
+    metadata     jsonb,
+    source_type  varchar(20),
+    source_name  varchar(500),
+    size         bigint,
+    created_by   varchar,
+    created_at   TIMESTAMPTZ           DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMPTZ           DEFAULT CURRENT_TIMESTAMP
 );
 
--- Index pour optimiser les recherches par resource_id
-CREATE INDEX resource_allowed_roles_resource_idx ON knowledge.resource_allowed_roles(resource_id);
+CREATE INDEX resource_name_idx ON knowledge.resource (name);
+CREATE INDEX resource_status_idx ON knowledge.resource (status);
+CREATE INDEX resource_created_at_idx ON knowledge.resource (created_at DESC);
+CREATE INDEX resource_folder_idx ON knowledge.resource (folder_id);
 
--- Index pour optimiser les recherches par role_id
-CREATE INDEX resource_allowed_roles_role_idx ON knowledge.resource_allowed_roles(role_id);
+CREATE TABLE knowledge.resource_group_permission
+(
+    resource_id   UUID NOT NULL REFERENCES knowledge.resource (id) ON DELETE CASCADE,
+    group_id      UUID NOT NULL REFERENCES referential.groups (id) ON DELETE CASCADE,
+    permission_id UUID NOT NULL REFERENCES referential.permissions (id),
+    PRIMARY KEY (resource_id, group_id)
+);
+
+CREATE INDEX resource_group_permission_resource_idx ON knowledge.resource_group_permission (resource_id);
+CREATE INDEX resource_group_permission_group_idx ON knowledge.resource_group_permission (group_id);
+CREATE INDEX resource_group_permission_permission_idx ON knowledge.resource_group_permission (permission_id);
+
 
 -- ====================================================================
 -- Table vector_store: Required by Spring AI Vector Store
 -- ====================================================================
-CREATE TABLE IF NOT EXISTS knowledge.vector_store (
-                                            id text PRIMARY KEY,
-                                            content text NOT NULL,
-                                            metadata jsonb,
-                                            embedding vector(1536)
+CREATE TABLE IF NOT EXISTS knowledge.vector_store
+(
+    id          text PRIMARY KEY,
+    content     text NOT NULL,
+    metadata    jsonb,
+    embedding   vector(1536),
+    resource_id UUID GENERATED ALWAYS AS ((metadata ->> 'resource_id')::uuid) STORED
+        REFERENCES knowledge.resource (id) ON DELETE CASCADE
 );
 
 -- HNSW index for optimized vector searches
 CREATE INDEX IF NOT EXISTS vector_store_embedding_idx ON knowledge.vector_store
     USING hnsw (embedding vector_cosine_ops)
     WITH (m = 16, ef_construction = 64);
+
+CREATE INDEX IF NOT EXISTS vector_store_resource_id_idx ON knowledge.vector_store (resource_id);
+
+-- Defaults data
+INSERT INTO knowledge.folder (id, name, path, complete_path, created_by)
+VALUES ('00000000-0000-0000-0000-000000000001', 'Root Folder', 'ROOT', 'ROOT', 'anonymous');
+
+INSERT INTO knowledge.folder_group (folder_id, group_id)
+VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
+
+
+CREATE INDEX idx_resource_created_by ON knowledge.resource(created_by);
+CREATE INDEX idx_resource_folder_id ON knowledge.resource(folder_id);
+CREATE INDEX idx_folder_created_by ON knowledge.folder(created_by);
+

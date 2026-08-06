@@ -1,13 +1,19 @@
 package com.laulem.vectopath.knowledge.api.business.service.impl;
 
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
+import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.exception.VectorizationException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
+import com.laulem.vectopath.knowledge.api.business.model.ResourceGroupPermission;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 import com.laulem.vectopath.knowledge.api.business.repository.ResourceRepository;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
+import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
+import com.laulem.vectopath.knowledge.api.business.service.FolderUseCase;
+import com.laulem.vectopath.knowledge.api.business.service.ReferentialUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
-import com.laulem.vectopath.knowledge.api.business.service.RoleValidationUseCase;
+import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,74 +26,117 @@ public class ResourceService implements ResourceUseCase {
     private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
 
     private final ResourceRepository resourceRepository;
-    private final VectorizedResourceService vectorizedResourceService;
     private final VectorStoreRepository vectorRepository;
-    private final RoleValidationUseCase roleValidationUseCase;
+    private final FolderUseCase folderUseCase;
+    private final AuthenticationUseCase authenticationUseCase;
+    private final ReferentialUseCase referentialUseCase;
 
     public ResourceService(ResourceRepository resourceRepository,
-                           VectorizedResourceService vectorizedResourceService,
-                           VectorStoreRepository vectorRepository, final RoleValidationUseCase roleValidationUseCase) {
+                           VectorStoreRepository vectorRepository,
+                           final FolderUseCase folderUseCase,
+                           final AuthenticationUseCase authenticationUseCase,
+                           final ReferentialUseCase referentialUseCase) {
         this.resourceRepository = resourceRepository;
-        this.vectorizedResourceService = vectorizedResourceService;
         this.vectorRepository = vectorRepository;
-        this.roleValidationUseCase = roleValidationUseCase;
+        this.folderUseCase = folderUseCase;
+        this.authenticationUseCase = authenticationUseCase;
+        this.referentialUseCase = referentialUseCase;
     }
 
     @Override
     public Resource createResource(Resource resource) {
-        if (resource.getAccessLevel() == null) {
-            resource.setAccessLevel(Resource.AccessLevel.PRIVATE);
+        if (resource.getFolderId() != null && !folderUseCase.hasCurrentUserWriteAccess(resource.getFolderId())) {
+            throw new NotFoundException("Folder", resource.getFolderId().toString());
+        } else if (resource.getFolderId() == null) {
+            resource.setFolderId(folderUseCase.getOrCreateDefaultFolder().getId());
         }
-        roleValidationUseCase.validateAllowedRoles(resource.getAllowedRoles());
 
-        resource = processResourceVectorization(resource);
-        return resource;
+        validateGroupPermissions(resource.getGroupPermissions());
+
+        return processResourceVectorization(resource);
+    }
+
+    private void validateGroupPermissions(List<ResourceGroupPermission> groupPermissions) {
+        if (CollectionUtils.isEmpty(groupPermissions)) {
+            return;
+        }
+
+        List<UUID> groupIds = groupPermissions.stream().map(ResourceGroupPermission::getGroupId).toList();
+        if (!referentialUseCase.hasCurrentUserWriteGroupAccess(groupIds)) {
+            throw new ParamException("RESOURCE_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
+        }
     }
 
     @Override
-    public Optional<Resource> getResourceById(UUID id) {
-        return resourceRepository.findById(id);
+    public Optional<Resource> findById(UUID id) {
+        return resourceRepository.findByIdWithAccessControl(id);
     }
 
     @Override
-    public List<Resource> getAllResources() {
-        return resourceRepository.findAll();
+    public List<Resource> findAll() {
+        // Security is handled at the infrastructure layer for performance reasons.
+        return resourceRepository.findAllWithAccessControl();
     }
 
     @Override
-    public List<Resource> getResourcesByStatus(ResourceStatus status) {
-        return resourceRepository.findByStatus(status);
+    public List<Resource> findByStatus(ResourceStatus status) {
+        // Security is handled at the infrastructure layer for performance reasons.
+        return resourceRepository.findByStatusWithAccessControl(status);
     }
 
     @Override
-    public List<Resource> searchResourcesByName(String name) {
-        return resourceRepository.findByNameContainingIgnoreCase(name);
+    public List<Resource> searchResources(String name, String path) {
+        if (!StringUtils.hasText(name) && !StringUtils.hasText(path)) {
+            throw new ParamException("REQUIRED", "At least one of 'name' or 'path' must be provided", "");
+        }
+
+        // Security is handled at the infrastructure layer for performance reasons.
+        return resourceRepository.searchWithAccessControl(name, path);
     }
 
     @Override
     public void deleteResource(UUID id) {
+        getWritableResource(id);
+
         logger.info("Deleting resource: {}", id);
 
-        vectorizedResourceService.deleteResource(id);
+        vectorRepository.deleteResource(id);
         resourceRepository.deleteById(id);
     }
 
     @Override
     public Resource reprocessResource(UUID id) {
-        Resource resource = resourceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
+        Resource resource = getWritableResource(id);
 
-        logger.info("Reprocessing resource: {}", resource.getName());
+        logger.info("Reprocessing resource: {}", StringUtils.sanitizeForLog(resource.getName()));
 
-        vectorizedResourceService.deleteResource(id);
-        resource = processResourceVectorization(resource);
-
-        return resource;
+        vectorRepository.deleteResource(id);
+        return processResourceVectorization(resource);
     }
 
     @Override
     public void renameResource(UUID id, String newName) {
+        getWritableResource(id);
         resourceRepository.updateName(id, newName);
+    }
+
+    private Resource getWritableResource(UUID id) {
+        Resource resource = resourceRepository.findByIdWithAccessControl(id)
+                .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
+
+        if (!hasCurrentUserWriteAccess(resource)) {
+            throw new NotFoundException("Resource", id.toString());
+        }
+        return resource;
+    }
+
+    private boolean hasCurrentUserWriteAccess(Resource resource) {
+        if (authenticationUseCase.getCurrentUser().equals(resource.getCreatedBy())) {
+            return true;
+        }
+
+        return resource.getFolderId() != null
+                && (folderUseCase.hasCurrentUserWriteAccess(resource.getFolderId()) || resourceRepository.hasCurrentUserWriteAccess(resource.getId()));
     }
 
     private Resource processResourceVectorization(Resource resource) {
@@ -100,7 +149,7 @@ public class ResourceService implements ResourceUseCase {
             resource.setStatus(ResourceStatus.VECTORIZED);
             resourceRepository.updateStatus(resource);
 
-            logger.info("Vectorization completed successfully for resource: {}", resource.getName());
+            logger.info("Vectorization completed successfully for resource: {}", StringUtils.sanitizeForLog(resource.getName()));
             return resource;
         } catch (Exception e) {
             resource.setStatus(ResourceStatus.ERROR);

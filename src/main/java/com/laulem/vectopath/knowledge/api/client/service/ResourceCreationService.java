@@ -1,16 +1,22 @@
 package com.laulem.vectopath.knowledge.api.client.service;
 
+import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.model.Resource;
+import com.laulem.vectopath.knowledge.api.business.model.ResourceGroupPermission;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
-import com.laulem.vectopath.knowledge.api.client.service.resource.FileResourceGenerationFactory;
-import com.laulem.vectopath.knowledge.api.client.service.resource.GeneralResourceGenerationFactory;
+import com.laulem.vectopath.knowledge.api.client.dto.ResourceGroupPermissionRequest;
+import com.laulem.vectopath.knowledge.api.client.service.resource.files.FileResourceGenerationFactory;
+import com.laulem.vectopath.knowledge.api.client.service.resource.general.GeneralResourceGenerationFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ResourceCreationService {
@@ -35,22 +41,32 @@ public class ResourceCreationService {
     }
 
     public Resource createFileResource(CreateResourceRequest request, MultipartFile file) throws IOException {
-        Objects.requireNonNull(file, "MultipartFile must not be null for FILE source type");
+        if (file == null) {
+            throw new ParamException("REQUIRED", "Uploaded file must not be null", "file");
+        }
+
+        if (file.isEmpty()) {
+            throw new ParamException("REQUIRED", "Uploaded file must not be empty", "file");
+        }
+
         Resource resource = buildBaseResource(request);
         return fileFactory.getResourceGeneration(file).processResource(resource, request, file);
     }
 
     private Resource buildBaseResource(CreateResourceRequest request) {
-        String createdBy = authenticationUseCase.getCurrentUser();
-        Resource.AccessLevel accessLevel = request.accessLevel() != null ? request.accessLevel() : Resource.AccessLevel.PRIVATE;
-
         Resource resource = new Resource();
         resource.setName(request.name());
         resource.setMetadata(request.metadata());
-        resource.setCreatedBy(createdBy);
-        resource.setAccessLevel(accessLevel);
-        resource.setAllowedRoles(request.allowedRoles());
+        resource.setCreatedBy(authenticationUseCase.getCurrentUser());
+        resource.setGroupPermissions(toGroupPermissions(request.groupPermissions()));
         return resource;
+    }
+
+    private List<ResourceGroupPermission> toGroupPermissions(List<ResourceGroupPermissionRequest> groupPermissions) {
+        return Optional.ofNullable(groupPermissions).orElse(Collections.emptyList()).stream()
+                .filter(Objects::nonNull)
+                .map(groupPermission -> new ResourceGroupPermission(groupPermission.groupId(), groupPermission.permissionId()))
+                .toList();
     }
 }
 

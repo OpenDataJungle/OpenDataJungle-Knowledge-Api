@@ -12,10 +12,12 @@ public record SearchRequest(
         @JsonProperty("resource_ids") List<UUID> resourceIds
 ) {
     private static final int DEFAULT_LIMIT = 10;
+    private static final int MAX_LIMIT = 100;
     private static final double DEFAULT_MIN_SIMILARITY = 0.5;
 
     public SearchRequest {
         if (limit == null || limit <= 0) limit = DEFAULT_LIMIT;
-        if (minSimilarity == null || minSimilarity < 0 || minSimilarity > 0) minSimilarity = DEFAULT_MIN_SIMILARITY;
+        if (limit > MAX_LIMIT) limit = MAX_LIMIT;
+        if (minSimilarity == null || minSimilarity < 0 || minSimilarity > 1) minSimilarity = DEFAULT_MIN_SIMILARITY;
     }
 }

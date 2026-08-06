@@ -1,15 +1,18 @@
 package com.laulem.vectopath.knowledge.api.client.controller;
 
 import com.laulem.vectopath.knowledge.api.business.exception.NotFoundException;
-import com.laulem.vectopath.knowledge.api.business.model.Resource;
 import com.laulem.vectopath.knowledge.api.business.model.ResourceStatus;
 import com.laulem.vectopath.knowledge.api.business.service.ResourceUseCase;
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.RenameResourceRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.ResourceContentResponse;
+import com.laulem.vectopath.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.ResourceResponse;
 import com.laulem.vectopath.knowledge.api.client.service.ResourceCreationService;
 import com.laulem.vectopath.knowledge.api.infra.conf.security.SecurityExpressions;
+import com.laulem.vectopath.knowledge.api.shared.util.CollectionUtils;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -52,7 +55,6 @@ public class ResourceController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResourceResponse createResource(@RequestBody @Validated CreateResourceRequest request) throws IOException {
-        logger.info("Creating new resource of type {} : {}", request.sourceType(), request.name());
         return new ResourceResponse(resourceCreationService.createGeneralResource(request));
     }
 
@@ -63,18 +65,19 @@ public class ResourceController {
             @RequestPart("file") MultipartFile file,
             @RequestParam("name") String name,
             @RequestParam(value = "metadata", required = false) String metadata,
-            @RequestParam(value = "access_level", required = false) Resource.AccessLevel accessLevel,
-            @RequestParam(value = "allowed_roles", required = false) List<String> allowedRoles) throws IOException {
-        logger.info("Creating resource from file: {} with name: {}", file.getOriginalFilename(), name);
-        CreateResourceRequest request = new CreateResourceRequest(name, null, null, "file", metadata, accessLevel, allowedRoles);
+            @RequestParam(value = "folder_id", required = false) UUID folderId,
+            @Valid @RequestPart(value = "group_permissions", required = false) List<ResourceGroupPermissionRequest> groupPermissions) throws IOException {
+        logger.info("Creating resource from file: {} with name: {}",
+                StringUtils.sanitizeForLog(file.getOriginalFilename()), StringUtils.sanitizeForLog(name));
+        CreateResourceRequest request = new CreateResourceRequest(name, null, null, "file", metadata, folderId, CollectionUtils.emptyIfNull(groupPermissions));
         return new ResourceResponse(resourceCreationService.createFileResource(request, file));
     }
 
     @PreAuthorize(SecurityExpressions.RESOURCES_READ)
     @GetMapping
-    public List<ResourceResponse> getAllResources() {
+    public List<ResourceResponse> findAll() {
         logger.info("Retrieving all resources");
-        return resourceUseCase.getAllResources()
+        return resourceUseCase.findAll()
                 .stream()
                 .map(ResourceResponse::new)
                 .toList();
@@ -85,17 +88,19 @@ public class ResourceController {
     public ResourceResponse getResourceById(@PathVariable UUID id) {
         logger.info("Retrieving resource: {}", id);
 
-        return resourceUseCase.getResourceById(id)
+        return resourceUseCase.findById(id)
                 .map(ResourceResponse::new)
                 .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
     }
 
     @PreAuthorize(SecurityExpressions.RESOURCES_READ)
     @GetMapping("/search")
-    public List<ResourceResponse> searchResourcesByName(@RequestParam String name) {
-        logger.info("Searching resources by name: {}", name);
+    public List<ResourceResponse> searchResources(@RequestParam(required = false) String name,
+                                                   @RequestParam(required = false) String path) {
+        logger.info("Searching resources by name: {} and path: {}",
+                StringUtils.sanitizeForLog(name), StringUtils.sanitizeForLog(path));
 
-        return resourceUseCase.searchResourcesByName(name)
+        return resourceUseCase.searchResources(name, path)
                 .stream()
                 .map(ResourceResponse::new)
                 .toList();
@@ -103,10 +108,10 @@ public class ResourceController {
 
     @PreAuthorize(SecurityExpressions.RESOURCES_READ)
     @GetMapping("/status/{status}")
-    public List<ResourceResponse> getResourcesByStatus(@PathVariable ResourceStatus status) {
+    public List<ResourceResponse> findByStatus(@PathVariable ResourceStatus status) {
         logger.info("Retrieving resources by status: {}", status);
 
-        return resourceUseCase.getResourcesByStatus(status)
+        return resourceUseCase.findByStatus(status)
                 .stream()
                 .map(ResourceResponse::new)
                 .toList();
@@ -117,7 +122,7 @@ public class ResourceController {
     public ResourceContentResponse getResourceContent(@PathVariable UUID id) {
         logger.info("Retrieving content for resource: {}", id);
 
-        return resourceUseCase.getResourceById(id)
+        return resourceUseCase.findById(id)
                 .map(ResourceContentResponse::new)
                 .orElseThrow(() -> new NotFoundException("Resource", id.toString()));
     }
@@ -133,7 +138,8 @@ public class ResourceController {
     @PatchMapping("/{id}")
     public void renameResource(@PathVariable UUID id,
                                @RequestBody @Validated RenameResourceRequest request) {
-        logger.info("Renaming resource {} to: {}", id, request.name());
+        // TODO : Add the possibilities of setting group permissions and folder_id
+        logger.info("Renaming resource {} to: {}", id, StringUtils.sanitizeForLog(request.name()));
         resourceUseCase.renameResource(id, request.name());
     }
 

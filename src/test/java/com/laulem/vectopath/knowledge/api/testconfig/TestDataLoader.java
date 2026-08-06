@@ -42,13 +42,13 @@ public class TestDataLoader {
 
     public void cleanDatabase() {
         jdbcTemplate.execute("DELETE FROM knowledge.vector_store");
-        jdbcTemplate.execute("DELETE FROM knowledge.resources");
+        jdbcTemplate.execute("DELETE FROM knowledge.resource");
     }
 
     private void insertResource(JsonNode resource) {
         String resourceSql = """
-                INSERT INTO knowledge.resources (id, name, content, content_type, status, metadata, source_type, source_name, created_by, access_level, created_at, updated_at)
-                VALUES (?::uuid, ?, ?, ?, ?, ?::json, ?, ?, ?, ?, NOW(), NOW())
+                INSERT INTO knowledge.resource (id, name, content, content_type, status, metadata, source_type, source_name, created_by, created_at, updated_at)
+                VALUES (?::uuid, ?, ?, ?, ?, ?::json, ?, ?, ?, NOW(), NOW())
                 """;
 
         jdbcTemplate.update(resourceSql,
@@ -60,8 +60,7 @@ public class TestDataLoader {
                 resource.get("metadata").asText(),
                 resource.has("sourceType") && !resource.get("sourceType").isNull() ? resource.get("sourceType").asText() : null,
                 resource.has("sourceName") && !resource.get("sourceName").isNull() ? resource.get("sourceName").asText() : null,
-                resource.has("createdBy") && !resource.get("createdBy").isNull() ? resource.get("createdBy").asText() : null,
-                resource.has("accessLevel") && !resource.get("accessLevel").isNull() ? resource.get("accessLevel").asText() : null);
+                resource.has("createdBy") && !resource.get("createdBy").isNull() ? resource.get("createdBy").asText() : null);
     }
 
     private void insertVector(JsonNode vector, String embeddingVector) {

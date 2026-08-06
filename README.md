@@ -29,6 +29,12 @@ Hexagonal architecture (Ports & Adapters) with clear separation of concerns:
 - Resource renaming
 - Traceability with source fields (source_type, source_url, source_content_type)
 
+### Folder Management
+
+- Hierarchical folder tree (`path` / `complete_path`) to organize resources
+- Per-user default folder (`POST /api/v1/folders/me`), created on demand
+- Group-based write access control when creating or updating a folder
+
 ### Semantic Search
 
 - Intelligent content chunking
@@ -48,8 +54,8 @@ Hexagonal architecture (Ports & Adapters) with clear separation of concerns:
 
 ### Security
 
-- OAuth2 authentication with JWT
-- Role and permission management at resource level
+- OAuth2 authentication with JWT (scope-based endpoint authorization)
+- Group-based permissions on resources and folders, checked against an external Referential API
 - Customizable CORS configuration
 - Local/test profile without security
 
@@ -104,6 +110,7 @@ src/main/java/com/laulem/vectopath/
 - PostgreSQL with pgvector extension
 - OpenAI API Key **or** Ollama instance (for embeddings)
 - OAuth2 Server (production only, e.g. Keycloak)
+- VectoPath Referential API instance (optional, required only for group-based permissions)
 - HuggingFace TEI instance (optional, for re-ranking)
 
 ### Getting Started
@@ -179,13 +186,16 @@ Content-Type: application/json
 {
   "name": "Example document",
   "content": "Here is the content of my document...",
-  "content_type": "text/plain",
   "source_type": "TEXT",
   "metadata": "{\"source\":\"upload\",\"author\":\"user\"}",
-  "access_level": "PUBLIC",
-  "allowed_roles": ["ROLE_USER"]
+  "folder_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "group_permissions": [
+    { "group_id": "b3f1c2d4-1234-4567-8901-abcdef123456", "permission_id": "c4a2e6f8-1234-4567-8901-abcdef654321" }
+  ]
 }
 ```
+
+`folder_id` and `group_permissions` are both optional. If `folder_id` is omitted, the resource is created in the current user's default folder (see [Folders](#folders)).
 
 #### Create a resource from a URL
 
@@ -196,8 +206,7 @@ Content-Type: application/json
 {
   "name": "Wikipedia Article",
   "source_type": "URL",
-  "source_url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
-  "access_level": "PUBLIC"
+  "url": "https://en.wikipedia.org/wiki/Artificial_intelligence"
 }
 ```
 
@@ -210,8 +219,8 @@ Content-Type: multipart/form-data
 file: [file]
 name: "My document"
 metadata: "{\"category\":\"documentation\"}"
-access_level: "PRIVATE"
-allowed_roles: ["ROLE_ADMIN"]
+folder_id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+group_permissions (JSON part): [{"group_id": "b3f1c2d4-1234-4567-8901-abcdef123456", "permission_id": "c4a2e6f8-1234-4567-8901-abcdef654321"}]
 ```
 
 #### List all resources
@@ -273,6 +282,67 @@ POST /api/v1/resources/{id}/reprocess
 
 ```http
 DELETE /api/v1/resources/{id}
+```
+
+### Folders
+
+Folders form a hierarchical tree: `path` is the complete path of the **parent** folder, and the folder's own `complete_path` is computed as `path + "/" + name`. Creating or updating a folder requires write access to the parent folder (and to the target groups, if `group_ids` is set).
+
+#### Create a folder
+
+```http
+POST /api/v1/folders
+Content-Type: application/json
+
+{
+  "name": "Reports",
+  "path": "ROOT",
+  "group_ids": ["b3f1c2d4-1234-4567-8901-abcdef123456"]
+}
+```
+
+`group_ids` is optional: if omitted, the folder inherits the groups of its parent folder.
+
+#### List all folders
+
+```http
+GET /api/v1/folders
+```
+
+#### Get or create the current user's default folder
+
+```http
+POST /api/v1/folders/me
+```
+
+#### Retrieve a folder
+
+```http
+GET /api/v1/folders/{id}
+```
+
+#### List a folder's direct children
+
+```http
+GET /api/v1/folders/{id}/children
+```
+
+#### Update a folder
+
+```http
+PUT /api/v1/folders/{id}
+Content-Type: application/json
+
+{
+  "name": "Reports 2024",
+  "path": "ROOT"
+}
+```
+
+#### Delete a folder
+
+```http
+DELETE /api/v1/folders/{id}
 ```
 
 ### Semantic Search
@@ -338,6 +408,22 @@ Content-Type: application/json
 - `SECURITY_SCOPE_RESOURCES_READ`: Scope for reading resources (default: `resources.read`)
 - `SECURITY_SCOPE_RESOURCES_WRITE`: Scope for writing resources (default: `resources.write`)
 - `SECURITY_SCOPE_RESOURCES_DELETE`: Scope for deleting resources (default: `resources.delete`)
+- `SECURITY_SCOPE_FOLDERS_READ`: Scope for reading folders (default: `folders.read`)
+- `SECURITY_SCOPE_FOLDERS_WRITE`: Scope for writing folders (default: `folders.write`)
+- `SECURITY_SCOPE_FOLDERS_DELETE`: Scope for deleting folders (default: `folders.delete`)
+
+#### Referential API (Groups & Permissions)
+
+Group membership and per-group permissions — used to authorize folder/resource creation and updates — are resolved by calling an external VectoPath Referential API, not managed by this service.
+
+- `VECTO_PATH_REFERENTIAL_API_BASE_URL`: Base URL of the Referential API (default: `http://localhost:8083/api/v1`)
+- `VECTO_PATH_REFERENTIAL_API_USER_GROUPS`: Path template to list a user's groups (default: `/users/{userId}/groups`)
+- `VECTO_PATH_REFERENTIAL_API_USER_BY_NAME`: Path template to resolve a user by username (default: `/users/username/{username}`)
+
+#### Uploads
+
+- `MULTIPART_MAX_FILE_SIZE`: Maximum size of a single uploaded file (default: `5MB`)
+- `MULTIPART_MAX_REQUEST_SIZE`: Maximum size of the whole multipart request (default: `10MB`)
 
 #### PGVector
 
@@ -360,6 +446,9 @@ Content-Type: application/json
 
 - `CONTENT_DOWNLOAD_TIMEOUT`: Download timeout in seconds (default: `30`)
 - `CONTENT_DOWNLOAD_CONNECT_TIMEOUT`: Connection timeout in seconds (default: `10`)
+- `CONTENT_DOWNLOAD_MAX_SIZE_BYTES`: Maximum size of downloaded content in bytes (default: `5242880`, i.e. 5MB)
+- `CONTENT_DOWNLOAD_BLOCK_INTERNAL_NETWORKS`: Block URL resources pointing to internal/private networks, to prevent SSRF (default: `true`)
+- `CONTENT_DOWNLOAD_ALLOWED_HOSTS`: Comma-separated host allowlist for URL resources (default: empty, i.e. no allowlist restriction beyond the internal-network block)
 
 #### Application
 
@@ -402,7 +491,7 @@ export EMBEDDING_API_KEY=sk-your-api-key-here
 export EMBEDDING_MODEL=text-embedding-3-small
 
 # OAuth2 (Keycloak)
-export JWT_ISSUER_URI=https://auth.myapp.com/realms/production
+export JWT_ISSUER_URI=https://laulem.com/realms/production
 
 # Database
 export DATABASE_URL=jdbc:postgresql://db.myapp.com:5432/vectopath_prod
@@ -410,19 +499,18 @@ export DATABASE_USERNAME=vectopath_user
 export DATABASE_PASSWORD=secure_password
 
 # CORS
-export CORS_ALLOWED_ORIGINS=https://myapp.com,https://www.myapp.com
+export CORS_ALLOWED_ORIGINS=https://localhost,https://www.laulem.com
 export CORS_ALLOW_CREDENTIALS=true
 
 # HuggingFace TEI Reranker (optional)
 export RERANKER_TYPE=HUGGINGFACE
-export RERANKER_BASE_URL=http://reranker.myapp.com:8085
+export RERANKER_BASE_URL=http://reranker.laulem.com:8085
 
 ./mvnw spring-boot:run
 ```
 
 ### Customization
 
-- **Chunk size**: Modify `DEFAULT_CHUNK_SIZE` in `ResourceServiceImpl`
 - **Embedding provider**: `EMBEDDING_PROVIDER=OPENAI` or `EMBEDDING_PROVIDER=OLLAMA`
 - **Embedding model**: `EMBEDDING_MODEL` (e.g. `text-embedding-3-small`, `nomic-embed-text`)
 - **Search limit**: Adjust the `limit` parameter in API requests
@@ -435,18 +523,19 @@ export RERANKER_BASE_URL=http://reranker.myapp.com:8085
 
 VectoPath uses Spring Security with OAuth2 Resource Server (JWT) to secure resource access.
 
-#### Role Management
+#### Authorization Model
 
-The role system allows controlling access to resources:
+Access control has two layers:
 
-- `app_roles` table: Stores available roles
-- `resource_allowed_roles` table: Associates resources with authorized roles
-- Authenticated users must have the appropriate role to access a resource
+1. **Scope-based endpoint authorization**: each endpoint requires a JWT scope (see the `SECURITY_SCOPE_*` variables in [Configuration](#oauth2-security)), e.g. `resources.write` to create a resource, `folders.read` to list folders.
+2. **Group-based object authorization**: group membership and permissions are not managed by this service — they are resolved from an external Referential API (see [Referential API](#referential-api-groups--permissions)).
+    - Resources carry a `group_permissions` list (`group_id` + `permission_id` pairs) for fine-grained access.
+    - Folders carry a `group_ids` list; creating or updating a folder requires write access to the parent folder's groups.
 
 #### Protected Endpoints
 
-- `/actuator/health`, `/actuator/info`: Public access
-- `/actuator/metrics`, `/actuator/prometheus`: Public access (metrics)
+- `/actuator/health`, `/actuator/health/**`: Public access
+- `/actuator/info`, `/actuator/metrics`, `/actuator/prometheus`: Authentication required
 - `/api/v1/**`: Authentication required
 - Other endpoints are protected by default
 
@@ -465,9 +554,16 @@ The role system allows controlling access to resources:
 
 Tests include:
 
-- Integration tests with Testcontainers
 - Architectural tests with ArchUnit (hexagonal architecture validation)
 - REST controller tests
+
+Integration tests relying on Testcontainers (Docker) are named `*IT.java` and are excluded from
+the commands above. They only run via the `it` Maven profile (requires Docker access, so it
+may not work in every devcontainer setup):
+
+```bash
+./mvnw verify -Pit
+```
 
 ### Build
 
@@ -478,8 +574,8 @@ Tests include:
 ### Docker
 
 ```bash
-docker build -t vectopath .
-docker run -p 8081:8081 vectopath
+cd infra/container
+docker-compose up -d
 ```
 
 ## TODO
@@ -487,13 +583,11 @@ docker run -p 8081:8081 vectopath
 - [ ] Paginated data retrieval
 - [ ] Allow database authentication (in addition to OAuth2)
 - [ ] Provide Swagger / OpenAPI
-- [ ] Rename `app_roles` (more explicit name)
-- [ ] Create CRUD operations for `app_roles`
 - [ ] Extend supported file types for vectorization
 - [ ] Provide a sample Bruno collection
 - [ ] Add more integration & unit tests
 - [ ] Parametrize rerank multiplier (if rerank activated: RERANKER_TYPE not empty)
-- [ ] Add limits on enpoints (e.g. max file size, max search limit ...)
+- [ ] Provide a Dockerfile to package the API as a container image
 
 
 TODO : Lier les pré actions sans passer par un compteur de priorité

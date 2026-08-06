@@ -5,6 +5,10 @@ application:
 spring:
   application:
     name: VectoPath Knowledge API
+  servlet:
+    multipart:
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:5MB}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:10MB}
   security:
     oauth2:
       resourceserver:
@@ -45,6 +49,10 @@ security:
       read: ${SECURITY_SCOPE_RESOURCES_READ:resources.read}
       write: ${SECURITY_SCOPE_RESOURCES_WRITE:resources.write}
       delete: ${SECURITY_SCOPE_RESOURCES_DELETE:resources.delete}
+    folders:
+      read: ${SECURITY_SCOPE_FOLDERS_READ:folders.read}
+      write: ${SECURITY_SCOPE_FOLDERS_WRITE:folders.write}
+      delete: ${SECURITY_SCOPE_FOLDERS_DELETE:folders.delete}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost,http://localhost:3000,http://localhost:4200,http://localhost:8080,http://localhost:9000}
     allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
@@ -53,10 +61,18 @@ security:
     allow-credentials: ${CORS_ALLOW_CREDENTIALS:false}
     max-age: ${CORS_MAX_AGE:3600}
 
+http:
+  client:
+    connect-timeout-seconds: ${HTTP_CLIENT_CONNECT_TIMEOUT:5}
+    read-timeout-seconds: ${HTTP_CLIENT_READ_TIMEOUT:10}
+
 content:
   download:
     timeout-seconds: ${CONTENT_DOWNLOAD_TIMEOUT:30}
     connect-timeout-seconds: ${CONTENT_DOWNLOAD_CONNECT_TIMEOUT:10}
+    max-size-bytes: ${CONTENT_DOWNLOAD_MAX_SIZE_BYTES:5242880}
+    block-internal-networks: ${CONTENT_DOWNLOAD_BLOCK_INTERNAL_NETWORKS:true}
+    allowed-hosts: ${CONTENT_DOWNLOAD_ALLOWED_HOSTS:}
 
 embedding:
   # provider : OPENAI (default) | OLLAMA
@@ -98,3 +114,9 @@ management:
     metrics:
       export:
         enabled: false
+
+vecto-path:
+  referential-api:
+    base-url: ${VECTO_PATH_REFERENTIAL_API_BASE_URL:http://localhost:8083/api/v1}
+    user-groups-by-user-id: ${VECTO_PATH_REFERENTIAL_API_USER_GROUPS:/users/{userId}/groups}
+    user-by-username: ${VECTO_PATH_REFERENTIAL_API_USER_BY_NAME:/users/username/{username}}

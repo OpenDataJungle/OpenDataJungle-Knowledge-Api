@@ -11,13 +11,13 @@ public interface ResourceUseCase {
 
     Resource createResource(Resource resource);
 
-    Optional<Resource> getResourceById(UUID id);
+    Optional<Resource> findById(UUID id);
 
-    List<Resource> getAllResources();
+    List<Resource> findAll();
 
-    List<Resource> getResourcesByStatus(ResourceStatus status);
+    List<Resource> findByStatus(ResourceStatus status);
 
-    List<Resource> searchResourcesByName(String name);
+    List<Resource> searchResources(String name, String path);
 
     void deleteResource(UUID id);
 

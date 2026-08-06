@@ -14,8 +14,11 @@ public class MdcUserFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        MDC.put(MDCConstant.TRANSACTION_USER, UserUtils.getUsername());
-
-        filterChain.doFilter(request, response);
+        try {
+            MDC.put(MDCConstant.TRANSACTION_USER, UserUtils.getUsername());
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove(MDCConstant.TRANSACTION_USER);
+        }
     }
 }

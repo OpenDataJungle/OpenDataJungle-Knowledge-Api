@@ -1,10 +1,11 @@
 package com.laulem.vectopath.knowledge.api.business.service.impl;
 
-import com.laulem.vectopath.knowledge.api.business.exception.ResourceDeletionException;
+import com.laulem.vectopath.knowledge.api.business.exception.ParamException;
 import com.laulem.vectopath.knowledge.api.business.model.PartialResource;
 import com.laulem.vectopath.knowledge.api.business.repository.VectorStoreRepository;
 import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase;
 import com.laulem.vectopath.knowledge.api.business.service.RerankerUseCase;
+import com.laulem.vectopath.knowledge.api.shared.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,25 +29,20 @@ public class VectorizedResourceService {
     }
 
     public List<PartialResource> searchSimilar(String query, int limit, double minSimilarity, List<UUID> resourceIds) {
-        logger.info("Semantic search for: {}", query);
+        if (!StringUtils.hasText(query)) {
+            throw new ParamException("REQUIRED", "Query is required for semantic search", "query");
+        }
+
+        logger.info("Semantic search for: {}", StringUtils.sanitizeForLog(query));
 
         String currentUser = authenticationUseCase.getCurrentUser();
-        List<String> userAuthorities = authenticationUseCase.getAuthorities();
 
+        // TODO: Add rerank candidate multiplier to configuration
         int candidatePoolSize = limit * RERANK_CANDIDATE_MULTIPLIER;
-        List<PartialResource> candidates = vectorRepository.searchSimilar(query, candidatePoolSize, minSimilarity, currentUser, userAuthorities, resourceIds);
+        List<PartialResource> candidates = vectorRepository.searchSimilar(query, candidatePoolSize, minSimilarity, currentUser, resourceIds);
 
         logger.debug("Re-ranking {} candidates down to {} results", candidates.size(), limit);
         return rerankerUseCase.rerank(query, candidates, limit);
-    }
-
-    public void deleteResource(UUID resourceId) {
-        logger.info("Deleting resource: {}", resourceId);
-        try {
-            vectorRepository.deleteResource(resourceId);
-        } catch (Exception e) {
-            throw new ResourceDeletionException(resourceId, e);
-        }
     }
 }
 

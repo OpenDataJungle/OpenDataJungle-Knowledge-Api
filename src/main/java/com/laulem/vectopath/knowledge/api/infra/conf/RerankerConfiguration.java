@@ -15,8 +15,8 @@ public class RerankerConfiguration {
 
     @Bean
     @ConditionalOnProperty(name = "reranker.type", havingValue = "HUGGINGFACE")
-    public RerankerUseCase huggingFaceRerankerService(RerankerProperties properties) {
-        return new HuggingFaceRerankerService(RestClient.builder().baseUrl(properties.getBaseUrl()).build());
+    public RerankerUseCase huggingFaceRerankerService(RerankerProperties properties, RestClient.Builder restClientBuilder) {
+        return new HuggingFaceRerankerService(restClientBuilder.baseUrl(properties.getBaseUrl()).build());
     }
 
     @Bean
