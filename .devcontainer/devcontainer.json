@@ -49,14 +49,17 @@
   "mounts": [
     "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
     "source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume",
-    "source=maven-m2-${devcontainerId},target=/home/node/.m2,type=volume"
+    "source=maven-m2-${devcontainerId},target=/home/node/.m2,type=volume",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
   "containerEnv": {
     "NODE_OPTIONS": "--max-old-space-size=4096",
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
     "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
     "DATABASE_URL": "jdbc:postgresql://host.docker.internal:5432/vecto_path",
-    "JWT_ISSUER_URI":"http://host.docker.internal:8090/realms/master"
+    "JWT_ISSUER_URI":"http://host.docker.internal:8090/realms/master",
+    "TESTCONTAINERS_RYUK_DISABLED": "true",
+    "TESTCONTAINERS_HOST_OVERRIDE": "host.docker.internal"
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/VectoPath-Knowledge-Api,type=bind,consistency=delegated",
   "workspaceFolder": "/VectoPath-Knowledge-Api",
