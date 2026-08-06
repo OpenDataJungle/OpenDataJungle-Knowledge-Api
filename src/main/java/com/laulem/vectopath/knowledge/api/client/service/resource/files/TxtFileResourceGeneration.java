@@ -32,7 +32,7 @@ public class TxtFileResourceGeneration implements FileResourceGeneration {
     @Override
     public Resource processResource(Resource resource, CreateResourceRequest request, MultipartFile file) throws IOException {
         String content = new String(file.getBytes(), StandardCharsets.UTF_8);
-        validateInput(resource, content);
+        validateInput(resource, content, file);
         resource.setSourceType("FILE");
         resource.setSourceName(sanitizeFileName(file.getOriginalFilename()));
         resource.setContent(content);
@@ -58,12 +58,16 @@ public class TxtFileResourceGeneration implements FileResourceGeneration {
         return sanitizedFileName;
     }
 
-    private void validateInput(Resource resource, String content) {
+    private void validateInput(Resource resource, String content, final MultipartFile file) {
         if (Strings.isBlank(resource.getName())) {
             throw new ParamException("REQUIRED", "Resource name is required", "name");
         }
         if (Strings.isBlank(content)) {
             throw new ParamException("REQUIRED", "File content is required for FILE resource type", "file");
+        }
+
+        if (file == null || file.isEmpty()) {
+            throw new ParamException("REQUIRED", "Uploaded file must not be null or empty", "file");
         }
     }
 }

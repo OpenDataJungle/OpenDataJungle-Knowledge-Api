@@ -57,10 +57,10 @@ public class HuggingFaceRerankerService implements RerankerUseCase {
         return candidates.stream().sorted(Comparator.comparingDouble(PartialResource::getSimilarityScore).reversed()).limit(limit).toList();
     }
 
-    private record RerankRequest(String query, List<String> texts, boolean truncate,
-                                 @JsonProperty("raw_scores") boolean rawScores) {
+    record RerankRequest(String query, List<String> texts, boolean truncate,
+                         @JsonProperty("raw_scores") boolean rawScores) {
     }
 
-    private record RerankResponse(int index, double score) {
+    record RerankResponse(int index, double score) {
     }
 }

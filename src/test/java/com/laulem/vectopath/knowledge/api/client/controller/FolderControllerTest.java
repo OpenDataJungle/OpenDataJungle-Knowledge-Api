@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -90,8 +91,8 @@ class FolderControllerTest {
         UUID id = UUID.randomUUID();
         UUID parentId = UUID.randomUUID();
         UUID groupId = UUID.randomUUID();
-        LocalDateTime createdAt = LocalDateTime.of(2024, 1, 1, 10, 0);
-        LocalDateTime updatedAt = LocalDateTime.of(2024, 6, 1, 12, 30);
+        LocalDateTime createdAt = LocalDateTime.of(2024, Month.JANUARY, 1, 10, 0);
+        LocalDateTime updatedAt = LocalDateTime.of(2024, Month.JUNE, 1, 12, 30);
         Folder folder = new Folder("docs", "/root", List.of(groupId), "alice");
         folder.setId(id);
         folder.setParentId(parentId);

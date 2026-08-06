@@ -64,7 +64,7 @@ class ContentDownloadServiceTest {
         when(response.getBody()).thenReturn(new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)));
     }
 
-    private void stubContentType(String contentTypeHeader) throws Exception {
+    private void stubContentType(String contentTypeHeader) {
         HttpHeaders headers = new HttpHeaders();
         if (contentTypeHeader != null) {
             headers.set(HttpHeaders.CONTENT_TYPE, contentTypeHeader);

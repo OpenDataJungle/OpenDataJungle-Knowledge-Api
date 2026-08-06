@@ -6,6 +6,7 @@ import com.laulem.vectopath.knowledge.api.business.service.AuthenticationUseCase
 import com.laulem.vectopath.knowledge.api.client.dto.CreateResourceRequest;
 import com.laulem.vectopath.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.laulem.vectopath.knowledge.api.client.service.resource.files.FileResourceGeneration;
+import com.laulem.vectopath.knowledge.api.client.service.resource.files.FileResourceGenerationFactory;
 import com.laulem.vectopath.knowledge.api.client.service.resource.general.GeneralResourceGeneration;
 import com.laulem.vectopath.knowledge.api.client.service.resource.general.GeneralResourceGenerationFactory;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -39,6 +40,12 @@ class ResourceCreationServiceTest {
 
     @Mock
     private GeneralResourceGeneration generalResourceGeneration;
+
+    @Mock
+    private FileResourceGenerationFactory fileFactory;
+
+    @Mock
+    private FileResourceGeneration fileResourceGeneration;
 
     @InjectMocks
     private ResourceCreationService service;
@@ -94,6 +101,38 @@ class ResourceCreationServiceTest {
 
         // Then
         assertThat(result).isSameAs(generated);
+        Resource captured = resourceCaptor.getValue();
+        assertThat(captured.getName()).isEqualTo("name");
+        assertThat(captured.getMetadata()).isEqualTo("meta");
+        assertThat(captured.getCreatedBy()).isEqualTo("alice");
+        assertThat(captured.getGroupPermissions()).hasSize(1);
+        assertThat(captured.getGroupPermissions().getFirst().getGroupId()).isEqualTo(groupId);
+        assertThat(captured.getGroupPermissions().getFirst().getPermissionId()).isEqualTo(permissionId);
+    }
+
+
+    @Test
+    void createFileResource_shouldReturnGeneratedResource_whenFileIsValid() throws Exception {
+        // Given
+        UUID groupId = UUID.randomUUID();
+        UUID permissionId = UUID.randomUUID();
+        UUID folderId = UUID.randomUUID();
+        MultipartFile file = new MockMultipartFile("file", "document.txt", "text/plain", "content".getBytes());
+        CreateResourceRequest request = new CreateResourceRequest(
+                "name", null, null, "file", "meta", folderId,
+                List.of(new ResourceGroupPermissionRequest(groupId, permissionId)));
+        when(authenticationUseCase.getCurrentUser()).thenReturn("alice");
+        when(fileFactory.getResourceGeneration(file)).thenReturn(fileResourceGeneration);
+        ArgumentCaptor<Resource> resourceCaptor = ArgumentCaptor.forClass(Resource.class);
+        Resource generated = new Resource();
+        when(fileResourceGeneration.processResource(resourceCaptor.capture(), eq(request), eq(file))).thenReturn(generated);
+
+        // When
+        Resource result = service.createFileResource(request, file);
+
+        // Then
+        assertThat(result).isSameAs(generated);
+        verify(fileFactory).getResourceGeneration(file);
         Resource captured = resourceCaptor.getValue();
         assertThat(captured.getName()).isEqualTo("name");
         assertThat(captured.getMetadata()).isEqualTo("meta");
