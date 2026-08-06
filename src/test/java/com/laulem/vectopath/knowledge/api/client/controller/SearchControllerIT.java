@@ -38,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 @Transactional
 @Import(TestcontainersConfiguration.class)
-@Disabled
 class SearchControllerIT {
     public static final String SEARCH_SEMANTIC_PATH = "/api/v1/search/semantic";
 

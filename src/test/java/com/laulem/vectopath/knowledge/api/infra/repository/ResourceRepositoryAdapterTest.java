@@ -49,7 +49,7 @@ class ResourceRepositoryAdapterTest {
         ResourceEntity savedEntity = new ResourceEntity();
         savedEntity.setId(UUID.randomUUID());
         savedEntity.setName("doc");
-        when(jpaRepository.save(any(ResourceEntity.class))).thenReturn(savedEntity);
+        when(jpaRepository.saveAndFlush(any(ResourceEntity.class))).thenReturn(savedEntity);
 
         // When
         Resource result = adapter.save(resource);
@@ -68,7 +68,7 @@ class ResourceRepositoryAdapterTest {
         resource.setGroupPermissions(List.of(new ResourceGroupPermission(groupId, permissionId)));
         ResourceEntity savedEntity = new ResourceEntity();
         savedEntity.setId(UUID.randomUUID());
-        when(jpaRepository.save(any(ResourceEntity.class))).thenReturn(savedEntity);
+        when(jpaRepository.saveAndFlush(any(ResourceEntity.class))).thenReturn(savedEntity);
 
         // When
         adapter.save(resource);
@@ -76,7 +76,7 @@ class ResourceRepositoryAdapterTest {
         // Then
         ArgumentCaptor<List<com.laulem.vectopath.knowledge.api.infra.entity.ResourceGroupPermissionEntity>> captor =
                 ArgumentCaptor.forClass(List.class);
-        verify(groupPermissionJpaRepository).saveAll(captor.capture());
+        verify(groupPermissionJpaRepository).saveAllAndFlush(captor.capture());
         assertThat(captor.getValue()).hasSize(1);
         assertThat(captor.getValue().getFirst().getId().getResourceId()).isEqualTo(savedEntity.getId());
         assertThat(captor.getValue().getFirst().getId().getGroupId()).isEqualTo(groupId);
@@ -87,13 +87,13 @@ class ResourceRepositoryAdapterTest {
     void save_shouldNotAssignGroupPermissions_whenNoneProvided() {
         // Given
         Resource resource = new Resource("doc", "content", "text/plain", null);
-        when(jpaRepository.save(any(ResourceEntity.class))).thenReturn(new ResourceEntity());
+        when(jpaRepository.saveAndFlush(any(ResourceEntity.class))).thenReturn(new ResourceEntity());
 
         // When
         adapter.save(resource);
 
         // Then
-        verify(groupPermissionJpaRepository, never()).saveAll(anyList());
+        verify(groupPermissionJpaRepository, never()).saveAllAndFlush(anyList());
     }
 
     @Test
@@ -217,7 +217,7 @@ class ResourceRepositoryAdapterTest {
 
         // Then
         ArgumentCaptor<ResourceEntity> captor = ArgumentCaptor.forClass(ResourceEntity.class);
-        verify(jpaRepository).save(captor.capture());
+        verify(jpaRepository).saveAndFlush(captor.capture());
         assertThat(captor.getValue().getName()).isEqualTo("new-name");
     }
 

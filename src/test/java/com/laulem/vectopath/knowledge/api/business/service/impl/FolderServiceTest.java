@@ -455,7 +455,7 @@ class FolderServiceTest {
     }
 
     @Test
-    void update_shouldThrowParamException_whenNoWriteAccessToFolderItself() {
+    void update_shouldThrowNotFoundException_whenNoWriteAccessToFolderItself() {
         // Given
         UUID id = UUID.randomUUID();
         Folder request = new Folder();
@@ -467,8 +467,7 @@ class FolderServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> service.update(request))
-                .isInstanceOf(ParamException.class)
-                .satisfies(ex -> assertThat(((ParamException) ex).getCode()).isEqualTo("FOLDER_ACCESS_DENIED"));
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test

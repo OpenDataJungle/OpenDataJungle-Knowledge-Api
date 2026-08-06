@@ -70,7 +70,7 @@ class ResourceCreationServiceTest {
     @Test
     void createGeneralResource_shouldUppercaseProvidedSourceType() throws Exception {
         // Given
-        CreateResourceRequest request = new CreateResourceRequest("name", null, "http://example.com", "url", null, null, null);
+        CreateResourceRequest request = new CreateResourceRequest("name", null, "http://laulem.com", "url", null, null, null);
         when(authenticationUseCase.getCurrentUser()).thenReturn("alice");
         when(generalFactory.getResourceGeneration("URL")).thenReturn(generalResourceGeneration);
         when(generalResourceGeneration.processResource(any(Resource.class), eq(request))).thenReturn(new Resource());

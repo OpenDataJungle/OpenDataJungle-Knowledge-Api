@@ -48,7 +48,7 @@ class FolderRepositoryAdapterTest {
         FolderEntity savedEntity = new FolderEntity();
         savedEntity.setId(UUID.randomUUID());
         savedEntity.setName("docs");
-        when(folderJpaRepository.save(any(FolderEntity.class))).thenReturn(savedEntity);
+        when(folderJpaRepository.saveAndFlush(any(FolderEntity.class))).thenReturn(savedEntity);
 
         ArgumentCaptor<FolderEntity> captor = ArgumentCaptor.forClass(FolderEntity.class);
 
@@ -57,7 +57,7 @@ class FolderRepositoryAdapterTest {
 
         // Then
         assertThat(result.getId()).isEqualTo(savedEntity.getId());
-        verify(folderJpaRepository).save(captor.capture());
+        verify(folderJpaRepository).saveAndFlush(captor.capture());
         Set<UUID> capturedGroupIds = captor.getValue().getGroups().stream().map(GroupEntity::getId).collect(Collectors.toSet());
         assertThat(capturedGroupIds).containsExactlyInAnyOrder(groupId1, groupId2);
     }
@@ -66,7 +66,7 @@ class FolderRepositoryAdapterTest {
     void save_shouldMapToEmptyGroupSet_whenGroupIdsIsNull() {
         // Given
         Folder folder = new Folder("docs", "/root", null, "alice");
-        when(folderJpaRepository.save(any(FolderEntity.class))).thenReturn(new FolderEntity());
+        when(folderJpaRepository.saveAndFlush(any(FolderEntity.class))).thenReturn(new FolderEntity());
 
         ArgumentCaptor<FolderEntity> captor = ArgumentCaptor.forClass(FolderEntity.class);
 
@@ -74,7 +74,7 @@ class FolderRepositoryAdapterTest {
         adapter.save(folder);
 
         // Then
-        verify(folderJpaRepository).save(captor.capture());
+        verify(folderJpaRepository).saveAndFlush(captor.capture());
         assertThat(captor.getValue().getGroups()).isEmpty();
     }
 

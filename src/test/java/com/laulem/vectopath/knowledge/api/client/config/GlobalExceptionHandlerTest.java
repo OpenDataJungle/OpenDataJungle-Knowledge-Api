@@ -384,7 +384,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleHttpDownloadException_shouldReturnBadGateway() {
         // Given
-        HttpDownloadException ex = new HttpDownloadException(502, "http://example.com");
+        HttpDownloadException ex = new HttpDownloadException(502, "http://laulem.com");
 
         // When
         ResponseEntity<GeneralResponseException> response = handler.handleHttpDownloadException(ex, request);
@@ -398,7 +398,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleContentDownloadException_shouldReturnInternalServerError() {
         // Given
-        ContentDownloadException ex = new ContentDownloadException("http://example.com", new RuntimeException("boom"));
+        ContentDownloadException ex = new ContentDownloadException("http://laulem.com", new RuntimeException("boom"));
 
         // When
         ResponseEntity<GeneralResponseException> response = handler.handleContentDownloadException(ex, request);
