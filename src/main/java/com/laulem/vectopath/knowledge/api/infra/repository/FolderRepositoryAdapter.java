@@ -33,7 +33,7 @@ public class FolderRepositoryAdapter implements FolderRepository {
     public Folder save(Folder folder) {
         FolderEntity entity = FolderEntity.fromDomain(folder);
         entity.setGroups(mapGroupEntities(folder));
-        return folderJpaRepository.save(entity).toDomain();
+        return folderJpaRepository.saveAndFlush(entity).toDomain();
     }
 
     private Set<GroupEntity> mapGroupEntities(final Folder folder) {
@@ -97,6 +97,7 @@ public class FolderRepositoryAdapter implements FolderRepository {
     @Transactional
     public void deleteById(UUID id) {
         folderJpaRepository.deleteById(id);
+        folderJpaRepository.flush();
     }
 
     @Override

@@ -37,13 +37,16 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
     public Resource save(Resource resource) {
         ResourceEntity entity = ResourceEntity.fromDomain(resource);
 
-        ResourceEntity savedEntity = jpaRepository.save(entity);
+        ResourceEntity savedEntity = jpaRepository.saveAndFlush(entity);
+
+        Resource savedResource = savedEntity.toDomain();
 
         if (CollectionUtils.isNotEmpty(resource.getGroupPermissions())) {
             assignGroupPermissions(savedEntity.getId(), resource.getGroupPermissions());
+            savedResource.setGroupPermissions(resource.getGroupPermissions());
         }
 
-        return savedEntity.toDomain();
+        return savedResource;
     }
 
     @Override
@@ -114,6 +117,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
     @Transactional
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
+        jpaRepository.flush();
     }
 
     @Override
@@ -130,7 +134,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
 
         resource.setUpdatedAt(DateUtils.now());
         resource.setName(newName);
-        jpaRepository.save(resource);
+        jpaRepository.saveAndFlush(resource);
     }
 
     @Override
@@ -154,6 +158,6 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
                         .permissionId(groupPermission.getPermissionId())
                         .build())
                 .toList();
-        groupPermissionJpaRepository.saveAll(entities);
+        groupPermissionJpaRepository.saveAllAndFlush(entities);
     }
 }

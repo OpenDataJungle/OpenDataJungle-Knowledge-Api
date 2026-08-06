@@ -126,7 +126,7 @@ public class FolderService implements FolderUseCase {
         }
 
         if (!folderRepository.hasCurrentUserWriteAccess(folder.getId())) {
-            throw new ParamException("FOLDER_ACCESS_DENIED", "Current user does not have write access to the folder", "path");
+            throw new NotFoundException("Folder", folder.getId().toString());
         }
     }
 
