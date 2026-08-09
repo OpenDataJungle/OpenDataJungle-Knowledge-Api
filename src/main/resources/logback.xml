@@ -35,7 +35,7 @@
         <appender-ref ref="Console"/>
     </root>
 
-    <logger name="com.laulem" level="trace" additivity="false">
+    <logger name="com.opendatajungle" level="trace" additivity="false">
         <appender-ref ref="RollingFile"/>
         <appender-ref ref="Console"/>
     </logger>

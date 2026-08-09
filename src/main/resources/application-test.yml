@@ -1,4 +1,4 @@
 logging:
   level:
-    com.laulem.vectopath: DEBUG
+    com.opendatajungle: DEBUG
     org.springframework.security: DEBUG

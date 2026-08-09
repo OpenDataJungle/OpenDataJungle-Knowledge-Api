@@ -1,5 +1,5 @@
 -- ====================================================================
--- VectoPath Database Initialization Script (Test Environment)
+-- OpenDataJungle Database Initialization Script (Test Environment)
 -- ====================================================================
 
 CREATE SCHEMA IF NOT EXISTS knowledge;

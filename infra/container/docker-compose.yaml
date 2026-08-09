@@ -1,15 +1,15 @@
 version: '3.8'
 
 services:
-  vecto-path-pgvector-db:
+  open-data-jungle-pgvector-db:
     build:
       context: .
-      dockerfile: vecto-path-pgvector-db.dockerfile
-    container_name: vecto-path-pgvector-db
+      dockerfile: pgvector-db.dockerfile
+    container_name: open-data-jungle-pgvector-db
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: vecto_path
+      POSTGRES_DB: open_data_jungle
     ports:
       - "5432:5432"
     volumes:

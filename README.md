@@ -1,6 +1,6 @@
-# VectoPath Knowledge Api - Resource Manager with Vectorization
+# OpenDataJungle Knowledge Api - Resource Manager with Vectorization
 
-VectoPath Knowledge Api is an intelligent resource management API with vectorization and semantic search capabilities
+OpenDataJungle Knowledge Api is an intelligent resource management API with vectorization and semantic search capabilities
 using PostgreSQL with the pgvector extension. The application integrates Spring Security with OAuth2 to secure resource
 access and provides fine-grained role management to control permissions.
 
@@ -77,7 +77,7 @@ Hexagonal architecture (Ports & Adapters) with clear separation of concerns:
 ## Project Structure
 
 ```
-src/main/java/com/laulem/vectopath/
+src/main/java/com/opendatajungle/
 ├── business/               # Business layer (domain)
 │   ├── model/             # Domain models
 │   ├── repository/        # Ports (interfaces)
@@ -110,7 +110,7 @@ src/main/java/com/laulem/vectopath/
 - PostgreSQL with pgvector extension
 - OpenAI API Key **or** Ollama instance (for embeddings)
 - OAuth2 Server (production only, e.g. Keycloak)
-- VectoPath Referential API instance (optional, required only for group-based permissions)
+- OpenDataJungle Referential API instance (optional, required only for group-based permissions)
 - HuggingFace TEI instance (optional, for re-ranking)
 
 ### Getting Started
@@ -127,14 +127,14 @@ docker-compose up -d
 The database will be accessible at:
 
 - Host: `localhost:5432`
-- Database: `vecto_path`
+- Database: `open_data_jungle`
 - User: `user`
 - Password: `password`
 
 To verify the container is running:
 
 ```bash
-docker ps | grep vecto-path-pgvector-db
+docker ps | grep open-data-jungle-pgvector-db
 ```
 
 To stop the database:
@@ -387,7 +387,7 @@ Content-Type: application/json
 
 #### Database
 
-- `DATABASE_URL`: PostgreSQL URL (default: `jdbc:postgresql://localhost:5432/vecto_path`)
+- `DATABASE_URL`: PostgreSQL URL (default: `jdbc:postgresql://localhost:5432/open_data_jungle`)
 - `DATABASE_USERNAME`: PostgreSQL user (default: `user`)
 - `DATABASE_PASSWORD`: PostgreSQL password (default: `password`)
 - `DATABASE_DRIVER`: JDBC driver (default: `org.postgresql.Driver`)
@@ -414,11 +414,11 @@ Content-Type: application/json
 
 #### Referential API (Groups & Permissions)
 
-Group membership and per-group permissions — used to authorize folder/resource creation and updates — are resolved by calling an external VectoPath Referential API, not managed by this service.
+Group membership and per-group permissions — used to authorize folder/resource creation and updates — are resolved by calling an external OpenDataJungle Referential API, not managed by this service.
 
-- `VECTO_PATH_REFERENTIAL_API_BASE_URL`: Base URL of the Referential API (default: `http://localhost:8083/api/v1`)
-- `VECTO_PATH_REFERENTIAL_API_USER_GROUPS`: Path template to list a user's groups (default: `/users/{userId}/groups`)
-- `VECTO_PATH_REFERENTIAL_API_USER_BY_NAME`: Path template to resolve a user by username (default: `/users/username/{username}`)
+- `OPEN_DATA_JUNGLE_REFERENTIAL_API_BASE_URL`: Base URL of the Referential API (default: `http://localhost:8083/api/v1`)
+- `OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_GROUPS`: Path template to list a user's groups (default: `/users/{userId}/groups`)
+- `OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_BY_NAME`: Path template to resolve a user by username (default: `/users/username/{username}`)
 
 #### Uploads
 
@@ -452,13 +452,13 @@ Group membership and per-group permissions — used to authorize folder/resource
 
 #### Application
 
-- `APPLICATION_TITLE`: Application title (default: `VectoPath Knowledge API`)
+- `APPLICATION_TITLE`: Application title (default: `OpenDataJungle Knowledge API`)
 - `APPLICATION_VERSION`: Application version (default: pom.xml version)
 - `SERVER_PORT`: Server port (default: `8081`)
 
 #### Logging
 
-- `LOGGING_LEVEL_VECTOPATH`: Log level for VectoPath (default: `INFO`)
+- `LOGGING_LEVEL_OPENDATAJUNGLE`: Log level for OpenDataJungle (default: `INFO`)
 - `LOGGING_LEVEL_SPRING_AI`: Log level for Spring AI (default: `INFO`)
 - `LOGGING_PATTERN_CONSOLE`: Console log pattern
 - `JACKSON_TIME_ZONE`: Jackson timezone (default: `UTC`)
@@ -494,8 +494,8 @@ export EMBEDDING_MODEL=text-embedding-3-small
 export JWT_ISSUER_URI=https://laulem.com/realms/production
 
 # Database
-export DATABASE_URL=jdbc:postgresql://db.myapp.com:5432/vectopath_prod
-export DATABASE_USERNAME=vectopath_user
+export DATABASE_URL=jdbc:postgresql://db.myapp.com:5432/opendatajungle_prod
+export DATABASE_USERNAME=opendatajungle_user
 export DATABASE_PASSWORD=secure_password
 
 # CORS
@@ -521,7 +521,7 @@ export RERANKER_BASE_URL=http://reranker.laulem.com:8085
 
 ### Authentication and Authorization
 
-VectoPath uses Spring Security with OAuth2 Resource Server (JWT) to secure resource access.
+OpenDataJungle uses Spring Security with OAuth2 Resource Server (JWT) to secure resource access.
 
 #### Authorization Model
 

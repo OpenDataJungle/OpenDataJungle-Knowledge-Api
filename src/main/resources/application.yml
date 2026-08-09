@@ -1,10 +1,10 @@
 application:
-  title: ${APPLICATION_TITLE:VectoPath Knowledge API}
+  title: ${APPLICATION_TITLE:OpenDataJungle Knowledge API}
   version: ${APPLICATION_VERSION:@project.version@}
 
 spring:
   application:
-    name: VectoPath Knowledge API
+    name: OpenDataJungle Knowledge API
   servlet:
     multipart:
       max-file-size: ${MULTIPART_MAX_FILE_SIZE:5MB}
@@ -15,7 +15,7 @@ spring:
         jwt:
           issuer-uri: ${JWT_ISSUER_URI:http://localhost:8090/realms/master}
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/vecto_path}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/open_data_jungle}
     username: ${DATABASE_USERNAME:user}
     password: ${DATABASE_PASSWORD:password}
     driver-class-name: ${DATABASE_DRIVER:org.postgresql.Driver}
@@ -94,7 +94,7 @@ spring.jackson:
 
 logging:
   level:
-    com.laulem.vectopath: ${LOGGING_LEVEL_VECTOPATH:INFO}
+    com.opendatajungle: ${LOGGING_LEVEL_OPENDATAJUNGLE:INFO}
     org.springframework.ai: ${LOGGING_LEVEL_SPRING_AI:INFO}
   pattern:
     console: "${LOGGING_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}"
@@ -115,8 +115,8 @@ management:
       export:
         enabled: false
 
-vecto-path:
+open-data-jungle:
   referential-api:
-    base-url: ${VECTO_PATH_REFERENTIAL_API_BASE_URL:http://localhost:8083/api/v1}
-    user-groups-by-user-id: ${VECTO_PATH_REFERENTIAL_API_USER_GROUPS:/users/{userId}/groups}
-    user-by-username: ${VECTO_PATH_REFERENTIAL_API_USER_BY_NAME:/users/username/{username}}
+    base-url: ${OPEN_DATA_JUNGLE_REFERENTIAL_API_BASE_URL:http://localhost:8083/api/v1}
+    user-groups-by-user-id: ${OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_GROUPS:/users/{userId}/groups}
+    user-by-username: ${OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_BY_NAME:/users/username/{username}}

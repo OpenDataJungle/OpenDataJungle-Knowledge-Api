@@ -8,12 +8,12 @@
         <version>4.0.5</version>
     </parent>
 
-    <groupId>com.laulem</groupId>
-    <artifactId>vectopath-knowledge-api</artifactId>
+    <groupId>com.opendatajungle</groupId>
+    <artifactId>knowledge-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>VectoPath Knowledge API</name>
+    <name>OpenDataJungle Knowledge Api</name>
     <description>
-        VectoPath is a modular AI-driven search platform that enables secure and intelligent information retrieval
+        OpenDataJungle-Knowledge-Api is a modular AI-driven search platform that enables secure and intelligent information retrieval
         through data vectorization. Built with Spring Boot and pgvector, it provides
         an on-premise-ready architecture for private and efficient semantic search within enterprise or local
         environments.
