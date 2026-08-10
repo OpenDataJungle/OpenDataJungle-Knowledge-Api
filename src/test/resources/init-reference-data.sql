@@ -57,4 +57,4 @@ VALUES ('00000000-0000-0000-0000-000000000001', 'root_permission', 'Root permiss
 INSERT INTO reference_data.group_users (group_id, user_id, permission_id)
 VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
 
-CREATE INDEX reference_data.idx_group_users_group_id ON reference_data.group_users(group_id);
+CREATE INDEX idx_group_users_group_id ON reference_data.group_users(group_id);
