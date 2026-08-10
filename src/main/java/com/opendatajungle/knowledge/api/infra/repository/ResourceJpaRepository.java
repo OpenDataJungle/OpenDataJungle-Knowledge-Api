@@ -25,15 +25,15 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, UUI
             OR f.created_by = :username
             OR f.id IN (
                 SELECT fg.folder_id FROM knowledge.folder_group fg
-                INNER JOIN referential.group_users gu ON fg.group_id = gu.group_id
-                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
-                INNER JOIN referential.permissions p ON gu.permission_id = p.id AND p.can_read = true
+                INNER JOIN reference_data.group_users gu ON fg.group_id = gu.group_id
+                INNER JOIN reference_data.users u ON gu.user_id = u.id AND u.username = :username
+                INNER JOIN reference_data.permissions p ON gu.permission_id = p.id AND p.can_read = true
             )
             OR r.id IN (
                 SELECT rgp.resource_id FROM knowledge.resource_group_permission rgp
-                INNER JOIN referential.group_users gu ON rgp.group_id = gu.group_id
-                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
-                INNER JOIN referential.permissions p ON rgp.permission_id = p.id AND p.can_read = true
+                INNER JOIN reference_data.group_users gu ON rgp.group_id = gu.group_id
+                INNER JOIN reference_data.users u ON gu.user_id = u.id AND u.username = :username
+                INNER JOIN reference_data.permissions p ON rgp.permission_id = p.id AND p.can_read = true
             )
         )
         ORDER BY r.id, r.created_at DESC
@@ -53,9 +53,9 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, UUI
     @Query(value = """
         SELECT EXISTS (
             SELECT 1 FROM knowledge.resource_group_permission rgp
-            INNER JOIN referential.group_users gu ON rgp.group_id = gu.group_id
-            INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
-            INNER JOIN referential.permissions p ON rgp.permission_id = p.id AND p.can_write = true
+            INNER JOIN reference_data.group_users gu ON rgp.group_id = gu.group_id
+            INNER JOIN reference_data.users u ON gu.user_id = u.id AND u.username = :username
+            INNER JOIN reference_data.permissions p ON rgp.permission_id = p.id AND p.can_write = true
             WHERE rgp.resource_id = :resourceId
         )
         """, nativeQuery = true)

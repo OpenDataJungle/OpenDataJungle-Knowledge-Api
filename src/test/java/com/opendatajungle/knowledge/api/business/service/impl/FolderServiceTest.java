@@ -5,7 +5,7 @@ import com.opendatajungle.knowledge.api.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.model.Folder;
 import com.opendatajungle.knowledge.api.business.repository.FolderRepository;
 import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
-import com.opendatajungle.knowledge.api.business.service.ReferentialUseCase;
+import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,7 +34,7 @@ class FolderServiceTest {
     private AuthenticationUseCase authenticationUseCase;
 
     @Mock
-    private ReferentialUseCase referentialUseCase;
+    private ReferenceDataUseCase referenceDataUseCase;
 
     @InjectMocks
     private FolderService service;
@@ -102,7 +102,7 @@ class FolderServiceTest {
         // Given
         UUID groupId = UUID.randomUUID();
         Folder folder = new Folder("docs", "/root", List.of(groupId), "alice");
-        when(referentialUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(false);
+        when(referenceDataUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(false);
 
         // When & Then
         assertThatThrownBy(() -> service.create(folder))
@@ -116,7 +116,7 @@ class FolderServiceTest {
         UUID groupId = UUID.randomUUID();
         UUID parentId = UUID.randomUUID();
         Folder folder = new Folder("docs", "/root", List.of(groupId), "alice");
-        when(referentialUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(true);
+        when(referenceDataUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(true);
         when(folderRepository.findFolderIdByCompletePath("/root")).thenReturn(Optional.of(parentId));
         when(folderRepository.hasCurrentUserWriteAccess(parentId)).thenReturn(true);
         when(folderRepository.existsByCompletePath("/root/docs")).thenReturn(false);
@@ -253,7 +253,7 @@ class FolderServiceTest {
         existing.setId(id);
 
         when(folderRepository.hasCurrentUserWriteAccess(id)).thenReturn(true);
-        when(referentialUseCase.hasCurrentUserWriteGroupAccess(List.of(newGroupId))).thenReturn(true);
+        when(referenceDataUseCase.hasCurrentUserWriteGroupAccess(List.of(newGroupId))).thenReturn(true);
         when(folderRepository.findById(id)).thenReturn(Optional.of(existing));
         when(folderRepository.findFolderIdByCompletePath("/new-parent")).thenReturn(Optional.of(newParentId));
         when(folderRepository.hasCurrentUserWriteAccess(newParentId)).thenReturn(true);
@@ -343,7 +343,7 @@ class FolderServiceTest {
 
         when(folderRepository.hasCurrentUserWriteAccess(id)).thenReturn(true);
         when(folderRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(referentialUseCase.hasCurrentUserWriteGroupAccess(List.of(newGroupId))).thenReturn(false);
+        when(referenceDataUseCase.hasCurrentUserWriteGroupAccess(List.of(newGroupId))).thenReturn(false);
 
         // When & Then
         assertThatThrownBy(() -> service.update(request))

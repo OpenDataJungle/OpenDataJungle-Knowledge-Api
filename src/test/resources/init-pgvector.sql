@@ -50,7 +50,7 @@ CREATE INDEX folder_parent_id_idx ON knowledge.folder (parent_id);
 CREATE TABLE knowledge.folder_group
 (
     folder_id     UUID NOT NULL REFERENCES knowledge.folder (id) ON DELETE CASCADE,
-    group_id      UUID NOT NULL REFERENCES referential.groups (id) ON DELETE CASCADE,
+    group_id      UUID NOT NULL REFERENCES reference_data.groups (id) ON DELETE CASCADE,
     PRIMARY KEY (folder_id, group_id)
 );
 
@@ -82,8 +82,8 @@ CREATE INDEX resource_folder_idx ON knowledge.resource (folder_id);
 CREATE TABLE knowledge.resource_group_permission
 (
     resource_id   UUID NOT NULL REFERENCES knowledge.resource (id) ON DELETE CASCADE,
-    group_id      UUID NOT NULL REFERENCES referential.groups (id) ON DELETE CASCADE,
-    permission_id UUID NOT NULL REFERENCES referential.permissions (id),
+    group_id      UUID NOT NULL REFERENCES reference_data.groups (id) ON DELETE CASCADE,
+    permission_id UUID NOT NULL REFERENCES reference_data.permissions (id),
     PRIMARY KEY (resource_id, group_id)
 );
 

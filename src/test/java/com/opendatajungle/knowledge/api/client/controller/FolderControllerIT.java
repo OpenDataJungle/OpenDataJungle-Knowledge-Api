@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opendatajungle.knowledge.api.client.dto.CreateResourceRequest;
 import com.opendatajungle.knowledge.api.client.dto.FolderRequest;
 import com.opendatajungle.knowledge.api.client.dto.SearchRequest;
-import com.opendatajungle.knowledge.api.infra.repository.ReferentialRepository;
+import com.opendatajungle.knowledge.api.infra.repository.ReferenceDataRepository;
 import com.opendatajungle.knowledge.api.testconfig.TestDataLoader;
 import com.opendatajungle.knowledge.api.testconfig.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +62,7 @@ class FolderControllerIT {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @MockitoBean
-    private ReferentialRepository referentialRepository;
+    private ReferenceDataRepository referenceDataRepository;
 
     @MockitoBean
     private EmbeddingModel embeddingModel;
@@ -158,9 +158,9 @@ class FolderControllerIT {
 
     @Test
     void create_shouldCreateFolder_whenGroupAccessGranted() throws Exception {
-        // Given: the "root" group seeded by init-referential.sql, so the folder_group FK
+        // Given: the "root" group seeded by init-reference-data.sql, so the folder_group FK
         // constraint resolves to a real row.
-        when(referentialRepository.hasGroupWriteAccess(any(), any())).thenReturn(true);
+        when(referenceDataRepository.hasGroupWriteAccess(any(), any())).thenReturn(true);
         UUID groupId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         FolderRequest request = new FolderRequest("subfolder", "ROOT", List.of(groupId));
 

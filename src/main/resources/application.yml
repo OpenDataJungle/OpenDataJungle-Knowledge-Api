@@ -116,7 +116,7 @@ management:
         enabled: false
 
 open-data-jungle:
-  referential-api:
-    base-url: ${OPEN_DATA_JUNGLE_REFERENTIAL_API_BASE_URL:http://localhost:8083/api/v1}
-    user-groups-by-user-id: ${OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_GROUPS:/users/{userId}/groups}
-    user-by-username: ${OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_BY_NAME:/users/username/{username}}
+  reference-data-api:
+    base-url: ${OPEN_DATA_JUNGLE_REFERENCE_DATA_API_BASE_URL:http://localhost:8083/api/v1}
+    user-groups-by-user-id: ${OPEN_DATA_JUNGLE_REFERENCE_DATA_API_USER_GROUPS:/users/{userId}/groups}
+    user-by-username: ${OPEN_DATA_JUNGLE_REFERENCE_DATA_API_USER_BY_NAME:/users/username/{username}}

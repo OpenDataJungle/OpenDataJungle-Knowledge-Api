@@ -10,7 +10,7 @@ import com.opendatajungle.knowledge.api.business.repository.ResourceRepository;
 import com.opendatajungle.knowledge.api.business.repository.VectorStoreRepository;
 import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
-import com.opendatajungle.knowledge.api.business.service.ReferentialUseCase;
+import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import com.opendatajungle.knowledge.api.business.service.ResourceUseCase;
 import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
 import com.opendatajungle.knowledge.api.shared.util.StringUtils;
@@ -29,18 +29,18 @@ public class ResourceService implements ResourceUseCase {
     private final VectorStoreRepository vectorRepository;
     private final FolderUseCase folderUseCase;
     private final AuthenticationUseCase authenticationUseCase;
-    private final ReferentialUseCase referentialUseCase;
+    private final ReferenceDataUseCase referenceDataUseCase;
 
     public ResourceService(ResourceRepository resourceRepository,
                            VectorStoreRepository vectorRepository,
                            final FolderUseCase folderUseCase,
                            final AuthenticationUseCase authenticationUseCase,
-                           final ReferentialUseCase referentialUseCase) {
+                           final ReferenceDataUseCase referenceDataUseCase) {
         this.resourceRepository = resourceRepository;
         this.vectorRepository = vectorRepository;
         this.folderUseCase = folderUseCase;
         this.authenticationUseCase = authenticationUseCase;
-        this.referentialUseCase = referentialUseCase;
+        this.referenceDataUseCase = referenceDataUseCase;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ResourceService implements ResourceUseCase {
         }
 
         List<UUID> groupIds = groupPermissions.stream().map(ResourceGroupPermission::getGroupId).toList();
-        if (!referentialUseCase.hasCurrentUserWriteGroupAccess(groupIds)) {
+        if (!referenceDataUseCase.hasCurrentUserWriteGroupAccess(groupIds)) {
             throw new ParamException("RESOURCE_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
     }

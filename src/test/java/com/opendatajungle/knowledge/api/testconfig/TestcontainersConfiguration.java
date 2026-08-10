@@ -16,6 +16,6 @@ public class TestcontainersConfiguration {
                 .withDatabaseName("testdb")
                 .withUsername("test")
                 .withPassword("test")
-                .withInitScripts("init-referential.sql", "init-pgvector.sql");
+                .withInitScripts("init-reference-data.sql", "init-pgvector.sql");
     }
 }

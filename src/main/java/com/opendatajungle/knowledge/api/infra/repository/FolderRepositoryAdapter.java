@@ -19,13 +19,13 @@ import java.util.UUID;
 public class FolderRepositoryAdapter implements FolderRepository {
     private final FolderJpaRepository folderJpaRepository;
     private final AuthenticationUseCase authenticationUseCase;
-    private final ReferentialRepository referentialRepository;
+    private final ReferenceDataRepository referenceDataRepository;
 
     public FolderRepositoryAdapter(FolderJpaRepository folderJpaRepository,
-                                   AuthenticationUseCase authenticationUseCase, final ReferentialRepository referentialRepository) {
+                                   AuthenticationUseCase authenticationUseCase, final ReferenceDataRepository referenceDataRepository) {
         this.authenticationUseCase = authenticationUseCase;
         this.folderJpaRepository = folderJpaRepository;
-        this.referentialRepository = referentialRepository;
+        this.referenceDataRepository = referenceDataRepository;
     }
 
     @Override
@@ -109,7 +109,7 @@ public class FolderRepositoryAdapter implements FolderRepository {
             return true;
         }
 
-        List<UUID> userGroupWriteAccess = referentialRepository.getGroupWriteAccess(authenticationUseCase.getCurrentUser());
+        List<UUID> userGroupWriteAccess = referenceDataRepository.getGroupWriteAccess(authenticationUseCase.getCurrentUser());
 
         return folder
                 .getGroups().stream()

@@ -5,7 +5,7 @@ import com.opendatajungle.knowledge.api.client.dto.CreateResourceRequest;
 import com.opendatajungle.knowledge.api.client.dto.FolderRequest;
 import com.opendatajungle.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.opendatajungle.knowledge.api.client.dto.SearchRequest;
-import com.opendatajungle.knowledge.api.infra.repository.ReferentialRepository;
+import com.opendatajungle.knowledge.api.infra.repository.ReferenceDataRepository;
 import com.opendatajungle.knowledge.api.testconfig.TestDataLoader;
 import com.opendatajungle.knowledge.api.testconfig.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,7 +82,7 @@ class SecurityAccessControlIT {
     private EmbeddingModel embeddingModel;
 
     @MockitoBean
-    private ReferentialRepository referentialRepository;
+    private ReferenceDataRepository referenceDataRepository;
 
     @BeforeEach
     void setUp() {
@@ -101,13 +101,13 @@ class SecurityAccessControlIT {
         // ROOT folder), so she needs write access granted through the root group to create anything
         // at all under ROOT in these tests. Group assignment is left permissive for her too, since
         // group-assignment authorization itself is already covered by FolderControllerIT.
-        when(referentialRepository.getGroupWriteAccess(eq("alice")))
+        when(referenceDataRepository.getGroupWriteAccess(eq("alice")))
                 .thenReturn(List.of(UUID.fromString("00000000-0000-0000-0000-000000000001")));
-        when(referentialRepository.hasGroupWriteAccess(any(), eq("alice"))).thenReturn(true);
+        when(referenceDataRepository.hasGroupWriteAccess(any(), eq("alice"))).thenReturn(true);
 
         // Second user "bob", distinct from the seeded default "anonymous", for cross-user isolation tests
         jdbcTemplate.update("""
-                INSERT INTO referential.users (id, first_name, last_name, username)
+                INSERT INTO reference_data.users (id, first_name, last_name, username)
                 VALUES ('00000000-0000-0000-0000-000000000002', 'Bob', 'User', 'bob')
                 ON CONFLICT DO NOTHING
                 """);
@@ -272,9 +272,9 @@ class SecurityAccessControlIT {
                 .andReturn().getResponse().getContentAsString();
         String folderId = objectMapper.readTree(response).get("id").asText();
 
-        // The external referential service is the source of truth for write access;
+        // The external reference_data service is the source of truth for write access;
         // simulate it granting bob write access through that same group.
-        when(referentialRepository.getGroupWriteAccess(eq("bob"))).thenReturn(List.of(READ_GROUP_ID));
+        when(referenceDataRepository.getGroupWriteAccess(eq("bob"))).thenReturn(List.of(READ_GROUP_ID));
 
         // When & Then: bob, who only has local read-membership, can now also delete it
         mockMvc.perform(asUser(delete(FOLDERS_PATH + "/" + folderId), "bob", "folders.delete"))
@@ -445,16 +445,16 @@ class SecurityAccessControlIT {
     private UUID seedGroupMembership(String username, UUID groupId, boolean canRead, boolean canWrite) {
         UUID permissionId = UUID.randomUUID();
         jdbcTemplate.update("""
-                INSERT INTO referential.groups (id, name, description) VALUES (?, ?, 'test group')
+                INSERT INTO reference_data.groups (id, name, description) VALUES (?, ?, 'test group')
                 ON CONFLICT DO NOTHING
                 """, groupId, "group-" + groupId);
         jdbcTemplate.update("""
-                INSERT INTO referential.permissions (id, name, description, can_read, can_write, is_admin)
+                INSERT INTO reference_data.permissions (id, name, description, can_read, can_write, is_admin)
                 VALUES (?, ?, 'test permission', ?, ?, false)
                 """, permissionId, "perm-" + permissionId, canRead, canWrite);
         jdbcTemplate.update("""
-                INSERT INTO referential.group_users (group_id, user_id, permission_id)
-                SELECT ?, u.id, ? FROM referential.users u WHERE u.username = ?
+                INSERT INTO reference_data.group_users (group_id, user_id, permission_id)
+                SELECT ?, u.id, ? FROM reference_data.users u WHERE u.username = ?
                 ON CONFLICT DO NOTHING
                 """, groupId, permissionId, username);
         return permissionId;

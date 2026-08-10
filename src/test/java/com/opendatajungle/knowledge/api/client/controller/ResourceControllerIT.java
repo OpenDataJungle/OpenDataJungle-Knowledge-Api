@@ -6,7 +6,7 @@ import com.opendatajungle.knowledge.api.business.service.ContentDownloaderUseCas
 import com.opendatajungle.knowledge.api.client.dto.CreateResourceRequest;
 import com.opendatajungle.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.opendatajungle.knowledge.api.client.dto.SearchRequest;
-import com.opendatajungle.knowledge.api.infra.repository.ReferentialRepository;
+import com.opendatajungle.knowledge.api.infra.repository.ReferenceDataRepository;
 import com.opendatajungle.knowledge.api.testconfig.TestDataLoader;
 import com.opendatajungle.knowledge.api.testconfig.TestcontainersConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +70,7 @@ class ResourceControllerIT {
     private ContentDownloaderUseCase contentDownloaderUseCase;
 
     @MockitoBean
-    private ReferentialRepository referentialRepository;
+    private ReferenceDataRepository referenceDataRepository;
 
     @BeforeEach
     void setUp() {
@@ -518,9 +518,9 @@ class ResourceControllerIT {
 
     @Test
     void createResource_shouldCreateResource_whenGroupPermissionGranted() throws Exception {
-        // Given: the "root" group/permission seeded by init-referential.sql, so the
+        // Given: the "root" group/permission seeded by init-reference-data.sql, so the
         // resource_group_permission FK constraints resolve to real rows.
-        when(referentialRepository.hasGroupWriteAccess(any(), any())).thenReturn(true);
+        when(referenceDataRepository.hasGroupWriteAccess(any(), any())).thenReturn(true);
         UUID groupId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         UUID permissionId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         List<ResourceGroupPermissionRequest> groupPermissions = List.of(

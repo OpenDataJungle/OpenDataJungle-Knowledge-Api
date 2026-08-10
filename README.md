@@ -55,7 +55,7 @@ Hexagonal architecture (Ports & Adapters) with clear separation of concerns:
 ### Security
 
 - OAuth2 authentication with JWT (scope-based endpoint authorization)
-- Group-based permissions on resources and folders, checked against an external Referential API
+- Group-based permissions on resources and folders, checked against an external Reference Data API
 - Customizable CORS configuration
 - Local/test profile without security
 
@@ -110,7 +110,7 @@ src/main/java/com/opendatajungle/
 - PostgreSQL with pgvector extension
 - OpenAI API Key **or** Ollama instance (for embeddings)
 - OAuth2 Server (production only, e.g. Keycloak)
-- OpenDataJungle Referential API instance (optional, required only for group-based permissions)
+- OpenDataJungle Reference Data API instance (optional, required only for group-based permissions)
 - HuggingFace TEI instance (optional, for re-ranking)
 
 ### Getting Started
@@ -412,13 +412,13 @@ Content-Type: application/json
 - `SECURITY_SCOPE_FOLDERS_WRITE`: Scope for writing folders (default: `folders.write`)
 - `SECURITY_SCOPE_FOLDERS_DELETE`: Scope for deleting folders (default: `folders.delete`)
 
-#### Referential API (Groups & Permissions)
+#### Reference Data API (Groups & Permissions)
 
-Group membership and per-group permissions — used to authorize folder/resource creation and updates — are resolved by calling an external OpenDataJungle Referential API, not managed by this service.
+Group membership and per-group permissions — used to authorize folder/resource creation and updates — are resolved by calling an external OpenDataJungle Reference Data API, not managed by this service.
 
-- `OPEN_DATA_JUNGLE_REFERENTIAL_API_BASE_URL`: Base URL of the Referential API (default: `http://localhost:8083/api/v1`)
-- `OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_GROUPS`: Path template to list a user's groups (default: `/users/{userId}/groups`)
-- `OPEN_DATA_JUNGLE_REFERENTIAL_API_USER_BY_NAME`: Path template to resolve a user by username (default: `/users/username/{username}`)
+- `OPEN_DATA_JUNGLE_REFERENCE_DATA_API_BASE_URL`: Base URL of the Reference Data API (default: `http://localhost:8083/api/v1`)
+- `OPEN_DATA_JUNGLE_REFERENCE_DATA_API_USER_GROUPS`: Path template to list a user's groups (default: `/users/{userId}/groups`)
+- `OPEN_DATA_JUNGLE_REFERENCE_DATA_API_USER_BY_NAME`: Path template to resolve a user by username (default: `/users/username/{username}`)
 
 #### Uploads
 
@@ -528,7 +528,7 @@ OpenDataJungle uses Spring Security with OAuth2 Resource Server (JWT) to secure 
 Access control has two layers:
 
 1. **Scope-based endpoint authorization**: each endpoint requires a JWT scope (see the `SECURITY_SCOPE_*` variables in [Configuration](#oauth2-security)), e.g. `resources.write` to create a resource, `folders.read` to list folders.
-2. **Group-based object authorization**: group membership and permissions are not managed by this service — they are resolved from an external Referential API (see [Referential API](#referential-api-groups--permissions)).
+2. **Group-based object authorization**: group membership and permissions are not managed by this service — they are resolved from an external Reference Data API.
     - Resources carry a `group_permissions` list (`group_id` + `permission_id` pairs) for fine-grained access.
     - Folders carry a `group_ids` list; creating or updating a folder requires write access to the parent folder's groups.
 

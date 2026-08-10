@@ -22,9 +22,9 @@ public interface FolderJpaRepository extends JpaRepository<FolderEntity, UUID> {
             f.created_by = :username
             OR f.id IN (
                 SELECT fg.folder_id FROM knowledge.folder_group fg
-                INNER JOIN referential.group_users gu ON fg.group_id = gu.group_id
-                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
-                INNER JOIN referential.permissions p ON gu.permission_id = p.id AND p.can_read = true
+                INNER JOIN reference_data.group_users gu ON fg.group_id = gu.group_id
+                INNER JOIN reference_data.users u ON gu.user_id = u.id AND u.username = :username
+                INNER JOIN reference_data.permissions p ON gu.permission_id = p.id AND p.can_read = true
             )
         )
         ORDER BY f.id
@@ -39,9 +39,9 @@ public interface FolderJpaRepository extends JpaRepository<FolderEntity, UUID> {
             f.created_by = :username
             OR f.id IN (
                 SELECT fg.folder_id FROM knowledge.folder_group fg
-                INNER JOIN referential.group_users gu ON fg.group_id = gu.group_id
-                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
-                INNER JOIN referential.permissions p ON gu.permission_id = p.id AND p.can_read = true
+                INNER JOIN reference_data.group_users gu ON fg.group_id = gu.group_id
+                INNER JOIN reference_data.users u ON gu.user_id = u.id AND u.username = :username
+                INNER JOIN reference_data.permissions p ON gu.permission_id = p.id AND p.can_read = true
             )
         )
         """, nativeQuery = true)
@@ -55,9 +55,9 @@ public interface FolderJpaRepository extends JpaRepository<FolderEntity, UUID> {
             d.created_by = :username
             OR d.id IN (
                 SELECT fg.folder_id FROM knowledge.folder_group fg
-                INNER JOIN referential.group_users gu ON fg.group_id = gu.group_id
-                INNER JOIN referential.users u ON gu.user_id = u.id AND u.username = :username
-                INNER JOIN referential.permissions p ON gu.permission_id = p.id AND p.can_read = true
+                INNER JOIN reference_data.group_users gu ON fg.group_id = gu.group_id
+                INNER JOIN reference_data.users u ON gu.user_id = u.id AND u.username = :username
+                INNER JOIN reference_data.permissions p ON gu.permission_id = p.id AND p.can_read = true
             )
         )
         ORDER BY d.id

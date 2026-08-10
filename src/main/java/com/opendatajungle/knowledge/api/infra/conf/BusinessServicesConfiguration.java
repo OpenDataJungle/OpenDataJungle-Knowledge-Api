@@ -5,7 +5,7 @@ import com.opendatajungle.knowledge.api.business.repository.ResourceRepository;
 import com.opendatajungle.knowledge.api.business.repository.VectorStoreRepository;
 import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
-import com.opendatajungle.knowledge.api.business.service.ReferentialUseCase;
+import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import com.opendatajungle.knowledge.api.business.service.RerankerUseCase;
 import com.opendatajungle.knowledge.api.business.service.ResourceUseCase;
 import com.opendatajungle.knowledge.api.business.service.impl.FolderService;
@@ -26,8 +26,8 @@ public class BusinessServicesConfiguration {
 
     @Bean
     public FolderUseCase folderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase,
-                                       ReferentialUseCase referentialUseCase) {
-        return new FolderService(folderRepository, authenticationUseCase, referentialUseCase);
+                                       ReferenceDataUseCase referenceDataUseCase) {
+        return new FolderService(folderRepository, authenticationUseCase, referenceDataUseCase);
     }
 
     @Bean
@@ -35,8 +35,8 @@ public class BusinessServicesConfiguration {
                                            VectorStoreRepository vectorStoreRepository,
                                            FolderUseCase folderUseCase,
                                            AuthenticationUseCase authenticationUseCase,
-                                           ReferentialUseCase referentialUseCase) {
-        return new ResourceService(resourceRepository, vectorStoreRepository, folderUseCase, authenticationUseCase, referentialUseCase);
+                                           ReferenceDataUseCase referenceDataUseCase) {
+        return new ResourceService(resourceRepository, vectorStoreRepository, folderUseCase, authenticationUseCase, referenceDataUseCase);
     }
 }
 

@@ -1,7 +1,7 @@
 package com.opendatajungle.knowledge.api.infra.service;
 
 import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
-import com.opendatajungle.knowledge.api.infra.repository.ReferentialRepository;
+import com.opendatajungle.knowledge.api.infra.repository.ReferenceDataRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,23 +15,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ReferentialServiceTest {
+class ReferenceDataServiceTest {
 
     @Mock
-    private ReferentialRepository referentialRepository;
+    private ReferenceDataRepository referenceDataRepository;
 
     @Mock
     private AuthenticationUseCase authenticationUseCase;
 
     @InjectMocks
-    private ReferentialService service;
+    private ReferenceDataService service;
 
     @Test
     void hasCurrentUserWriteGroupAccess_shouldReturnTrue_whenRepositoryGrantsAccess() {
         // Given
         List<UUID> groupIds = List.of(UUID.randomUUID());
         when(authenticationUseCase.getCurrentUser()).thenReturn("alice");
-        when(referentialRepository.hasGroupWriteAccess(groupIds, "alice")).thenReturn(true);
+        when(referenceDataRepository.hasGroupWriteAccess(groupIds, "alice")).thenReturn(true);
 
         // When
         boolean result = service.hasCurrentUserWriteGroupAccess(groupIds);
@@ -45,7 +45,7 @@ class ReferentialServiceTest {
         // Given
         List<UUID> groupIds = List.of(UUID.randomUUID());
         when(authenticationUseCase.getCurrentUser()).thenReturn("bob");
-        when(referentialRepository.hasGroupWriteAccess(groupIds, "bob")).thenReturn(false);
+        when(referenceDataRepository.hasGroupWriteAccess(groupIds, "bob")).thenReturn(false);
 
         // When
         boolean result = service.hasCurrentUserWriteGroupAccess(groupIds);

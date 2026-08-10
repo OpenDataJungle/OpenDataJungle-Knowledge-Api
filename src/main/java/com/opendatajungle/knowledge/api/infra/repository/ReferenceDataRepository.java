@@ -4,7 +4,7 @@ import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.infra.dto.GroupUserResponse;
 import com.opendatajungle.knowledge.api.infra.dto.PaginatedResponse;
 import com.opendatajungle.knowledge.api.infra.dto.UserResponse;
-import com.opendatajungle.knowledge.api.infra.properties.OpenDataJungleReferentialApiProperties;
+import com.opendatajungle.knowledge.api.infra.properties.OpenDataJungleReferenceDataApiProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Repository;
@@ -16,16 +16,16 @@ import java.util.UUID;
 
 @Repository
 @Slf4j
-public class ReferentialRepository {
+public class ReferenceDataRepository {
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
     private final RestClient restClient;
-    private final OpenDataJungleReferentialApiProperties openDataJungleReferentialApiProperties;
+    private final OpenDataJungleReferenceDataApiProperties openDataJungleReferenceDataApiProperties;
     private final AuthenticationUseCase authenticationUseCase;
 
-    public ReferentialRepository(RestClient.Builder restClientBuilder, OpenDataJungleReferentialApiProperties openDataJungleReferentialApiProperties, AuthenticationUseCase authenticationUseCase) {
-        this.restClient = restClientBuilder.baseUrl(openDataJungleReferentialApiProperties.getBaseUrl()).build();
-        this.openDataJungleReferentialApiProperties = openDataJungleReferentialApiProperties;
+    public ReferenceDataRepository(RestClient.Builder restClientBuilder, OpenDataJungleReferenceDataApiProperties openDataJungleReferenceDataApiProperties, AuthenticationUseCase authenticationUseCase) {
+        this.restClient = restClientBuilder.baseUrl(openDataJungleReferenceDataApiProperties.getBaseUrl()).build();
+        this.openDataJungleReferenceDataApiProperties = openDataJungleReferenceDataApiProperties;
         this.authenticationUseCase = authenticationUseCase;
     }
 
@@ -39,7 +39,7 @@ public class ReferentialRepository {
             String bearerToken = authenticationUseCase.getToken().orElse("");
 
             PaginatedResponse<GroupUserResponse> response = restClient.get()
-                    .uri(this.openDataJungleReferentialApiProperties.getUserGroupsByUserId(), userId)
+                    .uri(this.openDataJungleReferenceDataApiProperties.getUserGroupsByUserId(), userId)
                     .header(AUTHORIZATION, BEARER + bearerToken)
                     .retrieve()
                     .body(new ParameterizedTypeReference<PaginatedResponse<GroupUserResponse>>() {
@@ -64,7 +64,7 @@ public class ReferentialRepository {
             String bearerToken = authenticationUseCase.getToken().orElse("");
 
             PaginatedResponse<GroupUserResponse> response = restClient.get()
-                    .uri(this.openDataJungleReferentialApiProperties.getUserGroupsByUserId(), userId)
+                    .uri(this.openDataJungleReferenceDataApiProperties.getUserGroupsByUserId(), userId)
                     .header(AUTHORIZATION, BEARER + bearerToken)
                     .retrieve()
                     .body(new ParameterizedTypeReference<PaginatedResponse<GroupUserResponse>>() {
@@ -85,7 +85,7 @@ public class ReferentialRepository {
             String bearerToken = authenticationUseCase.getToken().orElse("");
 
             UserResponse userResponse = restClient.get()
-                    .uri(this.openDataJungleReferentialApiProperties.getUserByUsername(), currentUser)
+                    .uri(this.openDataJungleReferenceDataApiProperties.getUserByUsername(), currentUser)
                     .header(AUTHORIZATION, BEARER + bearerToken)
                     .retrieve()
                     .body(UserResponse.class);

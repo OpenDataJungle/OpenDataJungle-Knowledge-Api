@@ -34,7 +34,7 @@ class FolderRepositoryAdapterTest {
     private AuthenticationUseCase authenticationUseCase;
 
     @Mock
-    private ReferentialRepository referentialRepository;
+    private ReferenceDataRepository referenceDataRepository;
 
     @InjectMocks
     private FolderRepositoryAdapter adapter;
@@ -228,7 +228,7 @@ class FolderRepositoryAdapterTest {
         entity.setGroups(Set.of(group));
         when(folderJpaRepository.findById(id)).thenReturn(Optional.of(entity));
         when(authenticationUseCase.getCurrentUser()).thenReturn("alice");
-        when(referentialRepository.getGroupWriteAccess("alice")).thenReturn(List.of(groupId));
+        when(referenceDataRepository.getGroupWriteAccess("alice")).thenReturn(List.of(groupId));
 
         // When & Then
         assertThat(adapter.hasCurrentUserWriteAccess(id)).isTrue();
@@ -244,7 +244,7 @@ class FolderRepositoryAdapterTest {
         entity.setGroups(Set.of());
         when(folderJpaRepository.findById(id)).thenReturn(Optional.of(entity));
         when(authenticationUseCase.getCurrentUser()).thenReturn("alice");
-        when(referentialRepository.getGroupWriteAccess("alice")).thenReturn(List.of());
+        when(referenceDataRepository.getGroupWriteAccess("alice")).thenReturn(List.of());
 
         // When & Then
         assertThat(adapter.hasCurrentUserWriteAccess(id)).isFalse();

@@ -6,7 +6,7 @@ import com.opendatajungle.knowledge.api.infra.dto.GroupUserResponse;
 import com.opendatajungle.knowledge.api.infra.dto.PaginatedResponse;
 import com.opendatajungle.knowledge.api.infra.dto.PermissionResponse;
 import com.opendatajungle.knowledge.api.infra.dto.UserResponse;
-import com.opendatajungle.knowledge.api.infra.properties.OpenDataJungleReferentialApiProperties;
+import com.opendatajungle.knowledge.api.infra.properties.OpenDataJungleReferenceDataApiProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 @ExtendWith(MockitoExtension.class)
-class ReferentialRepositoryTest {
+class ReferenceDataRepositoryTest {
 
     @Mock
     private RestClient.Builder restClientBuilder;
@@ -46,11 +46,11 @@ class ReferentialRepositoryTest {
     @Mock
     private AuthenticationUseCase authenticationUseCase;
 
-    private ReferentialRepository repository;
+    private ReferenceDataRepository repository;
 
     @BeforeEach
     void setUp() {
-        OpenDataJungleReferentialApiProperties properties = new OpenDataJungleReferentialApiProperties();
+        OpenDataJungleReferenceDataApiProperties properties = new OpenDataJungleReferenceDataApiProperties();
         properties.setBaseUrl("https://laulem.com");
         properties.setUserByUsername("/users/by-username/{username}");
         properties.setUserGroupsByUserId("/users/{userId}/groups");
@@ -58,9 +58,9 @@ class ReferentialRepositoryTest {
         when(restClientBuilder.baseUrl("https://laulem.com")).thenReturn(restClientBuilder);
         when(restClientBuilder.build()).thenReturn(restClient);
 
-        // ReferentialRepository's constructor calls restClientBuilder.baseUrl(...).build() directly,
+        // ReferenceDataRepository's constructor calls restClientBuilder.baseUrl(...).build() directly,
         // so it must be built after the builder stubs above are in place (@InjectMocks would run too early).
-        repository = new ReferentialRepository(restClientBuilder, properties, authenticationUseCase);
+        repository = new ReferenceDataRepository(restClientBuilder, properties, authenticationUseCase);
 
         when(restClient.get()).thenReturn(uriSpec);
         when(uriSpec.uri(anyString(), any(Object[].class))).thenReturn(headersSpec);

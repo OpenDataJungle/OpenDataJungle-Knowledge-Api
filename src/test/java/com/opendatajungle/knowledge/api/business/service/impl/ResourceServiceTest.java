@@ -11,7 +11,7 @@ import com.opendatajungle.knowledge.api.business.repository.ResourceRepository;
 import com.opendatajungle.knowledge.api.business.repository.VectorStoreRepository;
 import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
-import com.opendatajungle.knowledge.api.business.service.ReferentialUseCase;
+import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -47,7 +47,7 @@ class ResourceServiceTest {
     private AuthenticationUseCase authenticationUseCase;
 
     @Mock
-    private ReferentialUseCase referentialUseCase;
+    private ReferenceDataUseCase referenceDataUseCase;
 
     @InjectMocks
     private ResourceService service;
@@ -92,7 +92,7 @@ class ResourceServiceTest {
         resource.setFolderId(folderId);
         resource.setGroupPermissions(List.of(new ResourceGroupPermission(groupId, UUID.randomUUID())));
         when(folderUseCase.hasCurrentUserWriteAccess(folderId)).thenReturn(true);
-        when(referentialUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(false);
+        when(referenceDataUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(false);
 
         // When & Then
         assertThatThrownBy(() -> service.createResource(resource))
@@ -109,7 +109,7 @@ class ResourceServiceTest {
         resource.setFolderId(folderId);
         resource.setGroupPermissions(List.of(new ResourceGroupPermission(groupId, UUID.randomUUID())));
         when(folderUseCase.hasCurrentUserWriteAccess(folderId)).thenReturn(true);
-        when(referentialUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(true);
+        when(referenceDataUseCase.hasCurrentUserWriteGroupAccess(List.of(groupId))).thenReturn(true);
         when(resourceRepository.save(any(Resource.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When

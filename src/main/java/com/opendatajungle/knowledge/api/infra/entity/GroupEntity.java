@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "groups", schema = "referential")
+@Table(name = "groups", schema = "reference_data")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

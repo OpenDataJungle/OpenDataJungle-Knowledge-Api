@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "permissions", schema = "referential")
+@Table(name = "permissions", schema = "reference_data")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

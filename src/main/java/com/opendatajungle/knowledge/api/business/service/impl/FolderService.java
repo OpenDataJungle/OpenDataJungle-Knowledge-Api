@@ -6,7 +6,7 @@ import com.opendatajungle.knowledge.api.business.model.Folder;
 import com.opendatajungle.knowledge.api.business.repository.FolderRepository;
 import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
-import com.opendatajungle.knowledge.api.business.service.ReferentialUseCase;
+import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
 import com.opendatajungle.knowledge.api.shared.util.StringUtils;
 
@@ -20,12 +20,12 @@ public class FolderService implements FolderUseCase {
 
     private final FolderRepository folderRepository;
     private final AuthenticationUseCase authenticationUseCase;
-    private final ReferentialUseCase referentialUseCase;
+    private final ReferenceDataUseCase referenceDataUseCase;
 
-    public FolderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase, ReferentialUseCase referentialUseCase) {
+    public FolderService(FolderRepository folderRepository, AuthenticationUseCase authenticationUseCase, ReferenceDataUseCase referenceDataUseCase) {
         this.folderRepository = folderRepository;
         this.authenticationUseCase = authenticationUseCase;
-        this.referentialUseCase = referentialUseCase;
+        this.referenceDataUseCase = referenceDataUseCase;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class FolderService implements FolderUseCase {
                 .filter(groupId -> !CollectionUtils.emptyIfNull(existing.getGroupIds()).contains(groupId))
                 .toList();
 
-        if (CollectionUtils.isNotEmpty(newGroupIds) && !referentialUseCase.hasCurrentUserWriteGroupAccess(newGroupIds)) {
+        if (CollectionUtils.isNotEmpty(newGroupIds) && !referenceDataUseCase.hasCurrentUserWriteGroupAccess(newGroupIds)) {
             throw new ParamException("FOLDER_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
     }
@@ -96,7 +96,7 @@ public class FolderService implements FolderUseCase {
         if (StringUtils.isNullOrBlank(folder.getPath()) || StringUtils.isNullOrBlank(folder.getName())) {
             throw new ParamException("FOLDER_PATH_OR_NAME_NULL", "Folder path and name cannot be null", "path");
         }
-        if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !referentialUseCase.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
+        if (CollectionUtils.isNotEmpty(folder.getGroupIds()) && !referenceDataUseCase.hasCurrentUserWriteGroupAccess(folder.getGroupIds())) {
             throw new ParamException("FOLDER_GROUP_ACCESS_DENIED", "Current user does not have write access to the specified group", "groupId");
         }
 
