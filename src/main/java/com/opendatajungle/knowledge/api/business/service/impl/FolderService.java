@@ -1,14 +1,14 @@
 package com.opendatajungle.knowledge.api.business.service.impl;
 
-import com.opendatajungle.knowledge.api.business.exception.NotFoundException;
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.NotFoundException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.model.Folder;
 import com.opendatajungle.knowledge.api.business.repository.FolderRepository;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
 import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
-import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
-import com.opendatajungle.knowledge.api.shared.util.StringUtils;
+import com.opendatajungle.commons.util.CollectionUtils;
+import com.opendatajungle.commons.util.StringUtils;
 
 import java.util.List;
 import java.util.UUID;

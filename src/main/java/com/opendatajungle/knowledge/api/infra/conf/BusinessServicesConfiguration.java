@@ -3,7 +3,7 @@ package com.opendatajungle.knowledge.api.infra.conf;
 import com.opendatajungle.knowledge.api.business.repository.FolderRepository;
 import com.opendatajungle.knowledge.api.business.repository.ResourceRepository;
 import com.opendatajungle.knowledge.api.business.repository.VectorStoreRepository;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
 import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import com.opendatajungle.knowledge.api.business.service.RerankerUseCase;

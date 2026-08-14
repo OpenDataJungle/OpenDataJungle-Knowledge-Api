@@ -1,7 +1,7 @@
 package com.opendatajungle.knowledge.api.client.controller;
 
 import com.opendatajungle.knowledge.api.business.model.Folder;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
 import com.opendatajungle.knowledge.api.client.dto.FolderRequest;
 import com.opendatajungle.knowledge.api.client.dto.FolderResponse;

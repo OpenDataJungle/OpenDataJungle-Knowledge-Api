@@ -1,6 +1,6 @@
 package com.opendatajungle.knowledge.api.business.model;
 
-import com.opendatajungle.knowledge.api.shared.util.DateUtils;
+import com.opendatajungle.commons.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;

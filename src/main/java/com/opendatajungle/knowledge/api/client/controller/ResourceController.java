@@ -1,6 +1,6 @@
 package com.opendatajungle.knowledge.api.client.controller;
 
-import com.opendatajungle.knowledge.api.business.exception.NotFoundException;
+import com.opendatajungle.commons.business.exception.NotFoundException;
 import com.opendatajungle.knowledge.api.business.model.ResourceStatus;
 import com.opendatajungle.knowledge.api.business.service.ResourceUseCase;
 import com.opendatajungle.knowledge.api.client.dto.CreateResourceRequest;
@@ -10,8 +10,8 @@ import com.opendatajungle.knowledge.api.client.dto.ResourceGroupPermissionReques
 import com.opendatajungle.knowledge.api.client.dto.ResourceResponse;
 import com.opendatajungle.knowledge.api.client.service.ResourceCreationService;
 import com.opendatajungle.knowledge.api.infra.conf.security.SecurityExpressions;
-import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
-import com.opendatajungle.knowledge.api.shared.util.StringUtils;
+import com.opendatajungle.commons.util.CollectionUtils;
+import com.opendatajungle.commons.util.StringUtils;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

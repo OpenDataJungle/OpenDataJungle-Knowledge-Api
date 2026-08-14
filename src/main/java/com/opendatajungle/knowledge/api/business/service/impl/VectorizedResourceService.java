@@ -1,11 +1,11 @@
 package com.opendatajungle.knowledge.api.business.service.impl;
 
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.model.PartialResource;
 import com.opendatajungle.knowledge.api.business.repository.VectorStoreRepository;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.RerankerUseCase;
-import com.opendatajungle.knowledge.api.shared.util.StringUtils;
+import com.opendatajungle.commons.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

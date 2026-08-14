@@ -1,16 +1,16 @@
 package com.opendatajungle.knowledge.api.infra.repository;
 
-import com.opendatajungle.knowledge.api.business.exception.NotFoundException;
+import com.opendatajungle.commons.business.exception.NotFoundException;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.model.ResourceGroupPermission;
 import com.opendatajungle.knowledge.api.business.model.ResourceStatus;
 import com.opendatajungle.knowledge.api.business.repository.ResourceRepository;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.infra.entity.ResourceEntity;
 import com.opendatajungle.knowledge.api.infra.entity.ResourceGroupPermissionEntity;
 import com.opendatajungle.knowledge.api.infra.entity.ResourceGroupPermissionIdEmbeddable;
-import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
-import com.opendatajungle.knowledge.api.shared.util.DateUtils;
+import com.opendatajungle.commons.util.CollectionUtils;
+import com.opendatajungle.commons.util.DateUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

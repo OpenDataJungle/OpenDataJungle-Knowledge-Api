@@ -1,7 +1,7 @@
 package com.opendatajungle.knowledge.api.business.service.impl;
 
-import com.opendatajungle.knowledge.api.business.exception.NotFoundException;
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.NotFoundException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.exception.VectorizationException;
 import com.opendatajungle.knowledge.api.business.model.Folder;
 import com.opendatajungle.knowledge.api.business.model.Resource;
@@ -9,7 +9,7 @@ import com.opendatajungle.knowledge.api.business.model.ResourceGroupPermission;
 import com.opendatajungle.knowledge.api.business.model.ResourceStatus;
 import com.opendatajungle.knowledge.api.business.repository.ResourceRepository;
 import com.opendatajungle.knowledge.api.business.repository.VectorStoreRepository;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
 import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import org.junit.jupiter.api.Test;

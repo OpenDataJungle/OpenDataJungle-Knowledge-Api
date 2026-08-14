@@ -1,19 +1,19 @@
 package com.opendatajungle.knowledge.api.business.service.impl;
 
-import com.opendatajungle.knowledge.api.business.exception.NotFoundException;
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.NotFoundException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.exception.VectorizationException;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.model.ResourceGroupPermission;
 import com.opendatajungle.knowledge.api.business.model.ResourceStatus;
 import com.opendatajungle.knowledge.api.business.repository.ResourceRepository;
 import com.opendatajungle.knowledge.api.business.repository.VectorStoreRepository;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.business.service.FolderUseCase;
 import com.opendatajungle.knowledge.api.business.service.ReferenceDataUseCase;
 import com.opendatajungle.knowledge.api.business.service.ResourceUseCase;
-import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
-import com.opendatajungle.knowledge.api.shared.util.StringUtils;
+import com.opendatajungle.commons.util.CollectionUtils;
+import com.opendatajungle.commons.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

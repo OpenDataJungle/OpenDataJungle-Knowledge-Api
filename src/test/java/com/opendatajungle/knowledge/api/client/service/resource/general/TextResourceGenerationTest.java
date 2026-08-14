@@ -1,6 +1,6 @@
 package com.opendatajungle.knowledge.api.client.service.resource.general;
 
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.service.ResourceUseCase;
 import com.opendatajungle.knowledge.api.client.dto.CreateResourceRequest;

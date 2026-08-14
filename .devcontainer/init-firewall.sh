@@ -73,6 +73,7 @@ for domain in \
     "registry.npmjs.org" \
     "api.anthropic.com" \
     "api.openai.com" \
+    "openai.com" \
     "sentry.io" \
     "statsig.anthropic.com" \
     "statsig.com" \
@@ -81,6 +82,7 @@ for domain in \
     "update.code.visualstudio.com" \
     "repo.maven.apache.org" \
     "repo1.maven.org" \
+    "central.sonatype.com" \
     "plugins.gradle.org" \
     "services.gradle.org" \
     "nodejs.org" \

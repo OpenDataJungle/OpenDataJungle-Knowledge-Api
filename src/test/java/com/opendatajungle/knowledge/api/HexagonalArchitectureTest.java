@@ -53,9 +53,11 @@ class HexagonalArchitectureTest {
                         COM_OPENDATAJUNGLE + ".api.business..",
                         COM_OPENDATAJUNGLE + ".api.shared..",
                         "java..",
-                        "org.slf4j.."
+                        "org.slf4j..",
+                        "com.opendatajungle.commons.util..",
+                        "com.opendatajungle.commons.business.."
                 )
-                .because("Business layer must be purely business-oriented, with no technical or framework dependencies");
+                .because("Business layer must be purely business-oriented, with no technical or framework dependencies, aside from the shared commons library");
 
         rule.check(importedClasses);
     }
@@ -191,7 +193,8 @@ class HexagonalArchitectureTest {
                         COM_OPENDATAJUNGLE + ".api.business.model..",
                         "java..",
                         "com.fasterxml.jackson..",
-                        "..shared.."
+                        "..shared..",
+                        "com.opendatajungle.commons.util.."
                 )
                 .because("Domain models must be purely business-oriented without technical dependencies");
 
@@ -266,7 +269,8 @@ class HexagonalArchitectureTest {
                 .that().resideInAPackage("..shared..")
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage("..shared..", "java..", "org.springframework..", "jakarta..", "org.apache..", "com.fasterxml..")
-                .because("Shared package should only contain utilities without business logic");
+                .because("Shared package should only contain utilities without business logic")
+                .allowEmptyShould(true);
 
         rule.check(importedClasses);
     }

@@ -1,6 +1,6 @@
 package com.opendatajungle.knowledge.api.client.controller;
 
-import com.opendatajungle.knowledge.api.business.exception.NotFoundException;
+import com.opendatajungle.commons.business.exception.NotFoundException;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.model.ResourceGroupPermission;
 import com.opendatajungle.knowledge.api.business.model.ResourceStatus;

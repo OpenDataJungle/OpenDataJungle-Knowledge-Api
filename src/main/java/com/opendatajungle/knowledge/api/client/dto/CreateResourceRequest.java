@@ -1,7 +1,7 @@
 package com.opendatajungle.knowledge.api.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
+import com.opendatajungle.commons.util.CollectionUtils;
 import jakarta.validation.Valid;
 
 import java.util.List;

@@ -1,11 +1,11 @@
 package com.opendatajungle.knowledge.api.client.service.resource.general;
 
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.service.ContentDownloaderUseCase;
 import com.opendatajungle.knowledge.api.business.service.ResourceUseCase;
 import com.opendatajungle.knowledge.api.client.dto.CreateResourceRequest;
-import com.opendatajungle.knowledge.api.shared.util.StringUtils;
+import com.opendatajungle.commons.util.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,7 +2,7 @@ package com.opendatajungle.knowledge.api.infra.service;
 
 import com.opendatajungle.knowledge.api.business.exception.ContentDownloadException;
 import com.opendatajungle.knowledge.api.business.exception.HttpDownloadException;
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.infra.properties.ContentDownloadProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

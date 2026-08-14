@@ -1,6 +1,6 @@
 package com.opendatajungle.knowledge.api.client.exception;
 
-import com.opendatajungle.knowledge.api.shared.util.StringUtils;
+import com.opendatajungle.commons.util.StringUtils;
 
 public class UnsupportedFileExtensionException extends RuntimeException {
 

@@ -3,7 +3,7 @@ package com.opendatajungle.knowledge.api.infra.entity;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.model.ResourceGroupPermission;
 import com.opendatajungle.knowledge.api.business.model.ResourceStatus;
-import com.opendatajungle.knowledge.api.shared.util.DateUtils;
+import com.opendatajungle.commons.util.DateUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

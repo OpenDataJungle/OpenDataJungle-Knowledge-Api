@@ -1,9 +1,9 @@
 package com.opendatajungle.knowledge.api.client.service;
 
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.model.ResourceGroupPermission;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.client.dto.CreateResourceRequest;
 import com.opendatajungle.knowledge.api.client.dto.ResourceGroupPermissionRequest;
 import com.opendatajungle.knowledge.api.client.service.resource.files.FileResourceGenerationFactory;

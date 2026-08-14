@@ -3,7 +3,7 @@ package com.opendatajungle.knowledge.api.infra.service;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opendatajungle.knowledge.api.business.model.PartialResource;
 import com.opendatajungle.knowledge.api.business.service.RerankerUseCase;
-import com.opendatajungle.knowledge.api.shared.util.CollectionUtils;
+import com.opendatajungle.commons.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;

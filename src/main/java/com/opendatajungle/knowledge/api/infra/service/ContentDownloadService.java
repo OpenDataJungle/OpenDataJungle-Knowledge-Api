@@ -2,10 +2,10 @@ package com.opendatajungle.knowledge.api.infra.service;
 
 import com.opendatajungle.knowledge.api.business.exception.ContentDownloadException;
 import com.opendatajungle.knowledge.api.business.exception.HttpDownloadException;
-import com.opendatajungle.knowledge.api.business.exception.ParamException;
+import com.opendatajungle.commons.business.exception.ParamException;
 import com.opendatajungle.knowledge.api.business.service.ContentDownloaderUseCase;
 import com.opendatajungle.knowledge.api.infra.properties.ContentDownloadProperties;
-import com.opendatajungle.knowledge.api.shared.util.StringUtils;
+import com.opendatajungle.commons.util.StringUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,8 +1,8 @@
 package com.opendatajungle.knowledge.api.infra.repository;
 
-import com.opendatajungle.knowledge.api.business.exception.NotFoundException;
+import com.opendatajungle.commons.business.exception.NotFoundException;
 import com.opendatajungle.knowledge.api.business.model.Folder;
-import com.opendatajungle.knowledge.api.business.service.AuthenticationUseCase;
+import com.opendatajungle.commons.business.service.AuthenticationUseCase;
 import com.opendatajungle.knowledge.api.infra.entity.FolderEntity;
 import com.opendatajungle.knowledge.api.infra.entity.GroupEntity;
 import org.junit.jupiter.api.Test;
