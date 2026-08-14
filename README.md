@@ -1,3 +1,8 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/projects/jdk/25/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![CI Pipeline](https://github.com/OpenDataJungle/OpenDataJungle-Knowledge-Api/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenDataJungle/OpenDataJungle-Knowledge-Api/actions/workflows/ci.yml)
+
 # OpenDataJungle Knowledge Api - Resource Manager with Vectorization
 
 OpenDataJungle Knowledge Api is an intelligent resource management API with vectorization and semantic search capabilities
