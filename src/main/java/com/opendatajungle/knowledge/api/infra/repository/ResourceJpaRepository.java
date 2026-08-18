@@ -59,5 +59,5 @@ public interface ResourceJpaRepository extends JpaRepository<ResourceEntity, UUI
             WHERE rgp.resource_id = :resourceId
         )
         """, nativeQuery = true)
-    boolean hasGroupWriteAccess(@Param("resourceId") UUID resourceId, @Param("username") String username);
+    boolean hasUserWriteAccess(@Param("resourceId") UUID resourceId, @Param("username") String username);
 }

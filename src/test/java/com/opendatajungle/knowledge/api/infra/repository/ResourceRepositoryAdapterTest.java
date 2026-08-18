@@ -256,7 +256,7 @@ class ResourceRepositoryAdapterTest {
         entity.setCreatedBy("bob");
         when(jpaRepository.findById(id)).thenReturn(Optional.of(entity));
         when(authenticationUseCase.getCurrentUser()).thenReturn("alice");
-        when(jpaRepository.hasGroupWriteAccess(id, "alice")).thenReturn(true);
+        when(jpaRepository.hasUserWriteAccess(id, "alice")).thenReturn(true);
 
         // When & Then
         assertThat(adapter.hasCurrentUserWriteAccess(id)).isTrue();

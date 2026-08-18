@@ -148,7 +148,7 @@ public class ResourceRepositoryAdapter implements ResourceRepository {
             return true;
         }
 
-        return jpaRepository.hasGroupWriteAccess(resourceId, currentUser);
+        return jpaRepository.hasUserWriteAccess(resourceId, currentUser);
     }
 
     private void assignGroupPermissions(final UUID resourceId, final List<ResourceGroupPermission> groupPermissions) {
