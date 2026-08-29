@@ -2,7 +2,7 @@ package com.opendatajungle.knowledge.api.business.model;
 
 import com.opendatajungle.commons.util.DateUtils;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,8 +19,8 @@ public class Resource {
     private String createdBy;
     private UUID folderId;
     private List<ResourceGroupPermission> groupPermissions;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
 
     public Resource() {
@@ -134,19 +134,19 @@ public class Resource {
         this.groupPermissions = groupPermissions;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

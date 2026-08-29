@@ -2,7 +2,7 @@ package com.opendatajungle.knowledge.api.infra.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -11,6 +11,6 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String username;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

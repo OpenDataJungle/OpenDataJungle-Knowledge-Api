@@ -9,11 +9,7 @@ spring:
     multipart:
       max-file-size: ${MULTIPART_MAX_FILE_SIZE:5MB}
       max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:10MB}
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${JWT_ISSUER_URI:http://localhost:8090/realms/master}
+
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/open_data_jungle}
     username: ${DATABASE_USERNAME:user}
@@ -53,13 +49,6 @@ security:
       read: ${SECURITY_SCOPE_FOLDERS_READ:folders.read}
       write: ${SECURITY_SCOPE_FOLDERS_WRITE:folders.write}
       delete: ${SECURITY_SCOPE_FOLDERS_DELETE:folders.delete}
-  cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost,http://localhost:3000,http://localhost:4200,http://localhost:8080,http://localhost:9000}
-    allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
-    allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers}
-    exposed-headers: ${CORS_EXPOSED_HEADERS:Access-Control-Allow-Origin,Access-Control-Allow-Credentials}
-    allow-credentials: ${CORS_ALLOW_CREDENTIALS:false}
-    max-age: ${CORS_MAX_AGE:3600}
 
 http:
   client:
@@ -88,32 +77,6 @@ reranker:
 
 server:
   port: ${SERVER_PORT:8081}
-
-spring.jackson:
-  time-zone: ${JACKSON_TIME_ZONE:UTC}
-
-logging:
-  level:
-    com.opendatajungle: ${LOGGING_LEVEL_OPENDATAJUNGLE:INFO}
-    org.springframework.ai: ${LOGGING_LEVEL_SPRING_AI:INFO}
-  pattern:
-    console: "${LOGGING_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}"
-
-management:
-  info:
-    ssl:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  health:
-    db:
-      enabled: true
-  otlp:
-    metrics:
-      export:
-        enabled: false
 
 open-data-jungle:
   reference-data-api:

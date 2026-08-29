@@ -147,8 +147,8 @@ public class VectorRepositoryAdapter implements VectorStoreRepository {
                         partialResource.setResourceName(rs.getString("resource_name"));
                         partialResource.setContentType(rs.getString("content_type"));
                         partialResource.setMetadata(rs.getString("metadata"));
-                        partialResource.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-                        partialResource.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                        partialResource.setCreatedAt(rs.getTimestamp("created_at").toInstant());
+                        partialResource.setUpdatedAt(rs.getTimestamp("updated_at").toInstant());
                         partialResource.setSimilarityScore(rs.getDouble("similarity_score"));
                         return partialResource;
                     }

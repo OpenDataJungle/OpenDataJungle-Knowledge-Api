@@ -2,8 +2,7 @@ package com.opendatajungle.knowledge.api.infra.entity;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,8 +26,8 @@ class ResourceEntityTest {
     void onUpdate_shouldRefreshUpdatedAt_withoutTouchingCreatedAt() {
         // Given
         ResourceEntity entity = new ResourceEntity();
-        LocalDateTime existingCreatedAt = LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0);
-        LocalDateTime staleUpdatedAt = LocalDateTime.of(2020, Month.JANUARY, 2, 0, 0);
+        Instant existingCreatedAt = Instant.parse("2020-01-01T00:00:00Z");
+        Instant staleUpdatedAt = Instant.parse("2020-01-02T00:00:00Z");
         entity.setCreatedAt(existingCreatedAt);
         entity.setUpdatedAt(staleUpdatedAt);
 

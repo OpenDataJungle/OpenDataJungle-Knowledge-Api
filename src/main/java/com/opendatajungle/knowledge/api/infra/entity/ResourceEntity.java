@@ -23,7 +23,7 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -79,10 +79,10 @@ public class ResourceEntity {
     private Set<ResourceGroupPermissionEntity> groupPermissions = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public static ResourceEntity fromDomain(Resource resource) {
         ResourceEntity entity = new ResourceEntity();

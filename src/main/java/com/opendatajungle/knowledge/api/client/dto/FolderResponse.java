@@ -3,7 +3,7 @@ package com.opendatajungle.knowledge.api.client.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +17,6 @@ public class FolderResponse {
     private UUID parentId;
     private List<UUID> groupIds;
     private String createdBy;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

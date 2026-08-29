@@ -26,7 +26,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -177,7 +178,7 @@ class VectorRepositoryAdapterTest {
         when(embeddingModel.embed(anyString())).thenReturn(new float[]{0.1f, 0.2f});
         UUID vectorId = UUID.randomUUID();
         UUID resourceId = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
+        Instant now = Instant.now();
 
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("vector_id")).thenReturn(vectorId.toString());
@@ -186,9 +187,9 @@ class VectorRepositoryAdapterTest {
         when(resultSet.getString("resource_name")).thenReturn("doc");
         when(resultSet.getString("content_type")).thenReturn("text/plain");
         when(resultSet.getString("metadata")).thenReturn("{\"page\":1}");
-        LocalDateTime createdAt = now.minusDays(1);
-        when(resultSet.getTimestamp("created_at")).thenReturn(Timestamp.valueOf(createdAt));
-        when(resultSet.getTimestamp("updated_at")).thenReturn(Timestamp.valueOf(now));
+        Instant createdAt = now.minus(Duration.ofDays(1));
+        when(resultSet.getTimestamp("created_at")).thenReturn(Timestamp.from(createdAt));
+        when(resultSet.getTimestamp("updated_at")).thenReturn(Timestamp.from(now));
         when(resultSet.getDouble("similarity_score")).thenReturn(0.87);
 
         when(jdbcTemplate.query(any(PreparedStatementCreator.class), any(RowMapper.class)))

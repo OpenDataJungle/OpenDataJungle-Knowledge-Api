@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opendatajungle.knowledge.api.business.model.Resource;
 import com.opendatajungle.knowledge.api.business.model.ResourceStatus;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,8 +21,8 @@ public record ResourceResponse(
         @JsonProperty("created_by") String createdBy,
         @JsonProperty("folder_id") UUID folderId,
         @JsonProperty("group_permissions") List<ResourceGroupPermissionResponse> groupPermissions,
-        @JsonProperty("created_at") LocalDateTime createdAt,
-        @JsonProperty("updated_at") LocalDateTime updatedAt
+        @JsonProperty("created_at") Instant createdAt,
+        @JsonProperty("updated_at") Instant updatedAt
 ) {
     public ResourceResponse(Resource resource) {
         this(
