@@ -5,6 +5,8 @@ application:
 spring:
   application:
     name: OpenDataJungle Knowledge API
+  config:
+      import: classpath:application-opendatajungle-commons.yml
   servlet:
     multipart:
       max-file-size: ${MULTIPART_MAX_FILE_SIZE:5MB}
