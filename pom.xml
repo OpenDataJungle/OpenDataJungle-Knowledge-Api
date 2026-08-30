@@ -24,6 +24,7 @@
         <testcontainers.version>1.21.4</testcontainers.version>
         <jsoup.version>1.23.1</jsoup.version>
         <archunit.version>1.5.0</archunit.version>
+        <springdoc-openapi.version>3.1.0</springdoc-openapi.version>
     </properties>
     <dependencies>
         <dependency>
@@ -134,6 +135,13 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${springdoc-openapi.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
