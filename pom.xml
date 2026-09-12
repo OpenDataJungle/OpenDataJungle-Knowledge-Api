@@ -22,7 +22,7 @@
         <java.version>25</java.version>
         <spring-ai.version>2.0.1</spring-ai.version>
         <testcontainers.version>1.21.4</testcontainers.version>
-        <jsoup.version>1.23.1</jsoup.version>
+        <jsoup.version>1.23.2</jsoup.version>
         <archunit.version>1.5.0</archunit.version>
         <springdoc-openapi.version>3.1.0</springdoc-openapi.version>
     </properties>
