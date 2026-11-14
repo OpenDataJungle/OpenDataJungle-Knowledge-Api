@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.1.2</version>
     </parent>
 
     <groupId>com.opendatajungle</groupId>
@@ -20,10 +20,10 @@
     </description>
     <properties>
         <java.version>25</java.version>
-        <spring-ai.version>2.0.1</spring-ai.version>
+        <spring-ai.version>2.0.2</spring-ai.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <jsoup.version>1.23.2</jsoup.version>
-        <archunit.version>1.5.0</archunit.version>
+        <archunit.version>1.5.1</archunit.version>
         <springdoc-openapi.version>3.2.0</springdoc-openapi.version>
     </properties>
     <dependencies>
